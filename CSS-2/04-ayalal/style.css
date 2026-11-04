@@ -1,0 +1,25 @@
+/* === Reset ба суурь === */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body{
+    margin: 0;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    color:#1b263b;
+}
+a {
+    color: inherit;
+}
+
+
+/* === Толгой хэсэг: лого зүүн, цэс баруун === */
+.site-header {
+    display:flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+}
