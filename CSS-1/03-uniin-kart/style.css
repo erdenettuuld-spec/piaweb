@@ -1,0 +1,71 @@
+/* === Reset === */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f4f6fb;
+}
+
+/* === Карт ===
+   Тооцолол: box-sizing: content-box байсан бол нийт өргөн
+   320 + 24×2 (padding) + 1×2 (border) = 370px болно.
+   border-box тул width: 320px нь padding, border-ийг багтаана. */
+.price-card {
+  width: 320px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #ffffff;
+  border: 1px solid #d9deea;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(29, 53, 87, 0.12);
+}
+
+.price-card__title {
+  margin: 0 0 8px;
+}
+
+.price-card__price {
+  margin: 0 0 16px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #e63946;
+}
+
+/* === Жагсаалт === */
+.price-card__features {
+  margin: 0 0 20px;
+  padding: 0;
+  list-style: none;
+}
+
+.price-card__features li {
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e8f0;
+}
+
+.price-card__features li:last-child {
+  border-bottom: none;
+}
+
+/* === Товч ===
+   display: block — бүтэн өргөн эзэлнэ (inline бол padding дээд/доод
+   талд зэргэлдээ мөрийг түлхэхгүй, өргөн нь текстээр хязгаарлагдана). */
+.price-card__button {
+  display: block;
+  padding: 12px 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #ffffff;
+  background: #1d3557;
+  border-radius: 8px;
+}
+
+.price-card__button:hover {
+  background: #e63946;
+}
+
