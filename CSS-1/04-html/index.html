@@ -1,0 +1,1695 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Вэб хөгжүүлэлт Learn Land</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: sticky top bar with view tabs; lesson reader = left lesson rail + reading column (~70ch) with live code demos; map view = course inventory */
+:root{
+  --bg:#f5f7f6; --surface:#ffffff; --ink:#15211d; --muted:#5d6b66; --line:#dce4e0;
+  --accent:#0f7a5c; --accent-soft:#e1f2eb; --code-bg:#f0f3f2; --warn:#9a6a00; --warn-bg:#fbf1d6; --ok:#0f7a5c; --bad:#b3243a; --bad-bg:#fbe6e9;
+  --c-lec:#2357c5; --c-lec-bg:#e6edfb; --c-ppt:#c2501d; --c-ppt-bg:#fbebe2;
+  --c-vid:#b3245a; --c-vid-bg:#f9e4ec; --c-code:#6a4bb8; --c-code-bg:#eee8fa;
+  --c-task:#9a6a00; --c-task-bg:#fbf1d6; --c-ref:#3f6b74; --c-ref-bg:#e3eef0;
+  --f-display:"Unbounded","Golos Text",system-ui,sans-serif;
+  --f-body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1513; --surface:#17201d; --ink:#e4ece8; --muted:#94a39d; --line:#2a3632;
+  --accent:#4fd1a5; --accent-soft:#163a2f; --code-bg:#111a17; --warn:#f0c65a; --warn-bg:#352a0c; --ok:#4fd1a5; --bad:#ff8a9b; --bad-bg:#3b1a22;
+  --c-lec:#86a8ff; --c-lec-bg:#1b2846; --c-ppt:#ff9b6b; --c-ppt-bg:#3a2216;
+  --c-vid:#ff86b3; --c-vid-bg:#3b1a28; --c-code:#b9a0ff; --c-code-bg:#2a2140;
+  --c-task:#f0c65a; --c-task-bg:#352a0c; --c-ref:#8fc6d1; --c-ref-bg:#1a2f33; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1513; --surface:#17201d; --ink:#e4ece8; --muted:#94a39d; --line:#2a3632;
+  --accent:#4fd1a5; --accent-soft:#163a2f; --code-bg:#111a17; --warn:#f0c65a; --warn-bg:#352a0c; --ok:#4fd1a5; --bad:#ff8a9b; --bad-bg:#3b1a22;
+  --c-lec:#86a8ff; --c-lec-bg:#1b2846; --c-ppt:#ff9b6b; --c-ppt-bg:#3a2216;
+  --c-vid:#ff86b3; --c-vid-bg:#3b1a28; --c-code:#b9a0ff; --c-code-bg:#2a2140;
+  --c-task:#f0c65a; --c-task-bg:#352a0c; --c-ref:#8fc6d1; --c-ref-bg:#1a2f33; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.65}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+a{color:var(--accent)}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:10px 20px;padding-block:10px}
+.brand{font-family:var(--f-display);font-weight:700;font-size:17px;letter-spacing:-.01em;margin-right:auto;text-decoration:none;color:var(--ink)}
+.brand small{display:block;font-family:var(--f-body);font-weight:400;font-size:12px;color:var(--muted);letter-spacing:0}
+.tabs{display:flex;gap:4px;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px}
+.tabs a{padding:6px 14px;border-radius:7px;text-decoration:none;color:var(--muted);font-weight:500;font-size:14px}
+.tabs a[aria-current="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.prog{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.bar{width:120px;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- Lesson reader ---------- */
+.reader{display:grid;grid-template-columns:250px minmax(0,1fr);gap:36px;padding-block:28px 70px}
+.lrail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 80px);align-self:start}
+.lrail h2{font:600 11.5px var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 10px}
+.lrail ol{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.lrail a{display:flex;gap:10px;align-items:center;padding:8px 10px;border-radius:8px;text-decoration:none;color:var(--ink);font-size:14px;line-height:1.3}
+.lrail a:hover{background:var(--surface)}
+.lrail a[aria-current="true"]{background:var(--accent-soft);font-weight:600}
+.lrail .n{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);background:var(--surface);display:grid;place-items:center;font:600 11px var(--f-mono);flex:none}
+.lrail li.done .n{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.lrail small{display:block;color:var(--muted);font-size:11.5px;font-weight:400}
+.toc{margin-top:18px;border-top:1px solid var(--line);padding-top:12px}
+.toc a{padding:4px 10px;font-size:13px;color:var(--muted)}
+.toc a:hover{color:var(--ink)}
+
+article.lesson{max-width:760px;min-width:0}
+.l-eyebrow{font:600 12px var(--f-mono);color:var(--accent);letter-spacing:.04em;text-transform:uppercase}
+article.lesson h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,4vw,38px);line-height:1.15;margin:6px 0 12px;letter-spacing:-.02em;text-wrap:balance}
+.lead{font-size:17px;color:var(--muted);margin:0 0 18px;max-width:65ch}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:22px}
+.pill{font:500 12.5px var(--f-body);padding:4px 10px;border-radius:99px;background:var(--surface);border:1px solid var(--line);color:var(--muted);text-decoration:none}
+a.pill:hover{color:var(--ink)}
+.goals{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:30px}
+.goals h3,article.lesson .goals h3{margin:0 0 6px;font-size:13px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.goals ul{margin:0;padding-left:20px}
+article.lesson h2{font-family:var(--f-display);font-weight:500;font-size:22px;line-height:1.3;margin:40px 0 10px;scroll-margin-top:90px;text-wrap:balance}
+article.lesson h2 .num{font:600 13px var(--f-mono);color:var(--accent);margin-right:8px;vertical-align:3px}
+article.lesson h3{font-size:17px;margin:24px 0 6px}
+article.lesson p,article.lesson li{max-width:68ch}
+article.lesson ul,article.lesson ol{padding-left:22px}
+article.lesson code{font-family:var(--f-mono);font-size:.86em;background:var(--code-bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.tbl{overflow-x:auto;margin:12px 0 18px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.tbl table{border-collapse:collapse;width:100%;font-size:14.5px;min-width:480px}
+.tbl th,.tbl td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+.tbl th{font-size:12.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);background:var(--bg)}
+.tbl tr:last-child td{border-bottom:0}
+.tip{border-left:3px solid var(--warn);background:var(--warn-bg);padding:10px 14px;border-radius:0 8px 8px 0;margin:14px 0;font-size:15px}
+.tip b{color:var(--warn)}
+.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:12px 0 18px;font-size:14px}
+.flow span{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px}
+.flow i{color:var(--muted);font-style:normal}
+.timeline{list-style:none;padding:0!important;margin:12px 0;border-left:2px solid var(--line)}
+.timeline li{padding:4px 0 10px 18px;position:relative}
+.timeline li::before{content:"";position:absolute;left:-6px;top:12px;width:10px;height:10px;border-radius:50%;background:var(--accent)}
+.timeline b{font-family:var(--f-mono);font-size:13px;margin-right:6px}
+
+/* live example */
+.ex{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0 20px;background:var(--surface)}
+.ex-bar{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--line);background:var(--bg);font:500 12.5px var(--f-mono);color:var(--muted)}
+.ex-bar .sp{margin-left:auto}
+.ex-bar button{font:500 12px var(--f-body);border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:6px;padding:3px 9px;cursor:pointer}
+.ex pre{margin:0;padding:14px 16px;overflow-x:auto;background:var(--code-bg);font:13px/1.6 var(--f-mono);color:var(--ink);white-space:pre}
+.ex .out{border-top:1px dashed var(--line);padding:0}
+.ex .out-label{font:600 11px var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);padding:8px 14px 0}
+.ex .stage{padding:10px 14px 16px;overflow-x:auto}
+.tok-tag{color:var(--c-lec)} .tok-attr{color:var(--c-ppt)} .tok-str{color:var(--accent)} .tok-com{color:var(--muted);font-style:italic} .tok-prop{color:var(--c-vid)}
+
+/* lab + check */
+.lab{border:1px solid var(--line);border-radius:12px;background:var(--surface);margin:14px 0;overflow:hidden}
+.lab-h{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;padding:12px 16px;border-bottom:1px solid var(--line)}
+.lab-h b{font-size:16px}
+.lab-h span{font:500 12px var(--f-mono);color:var(--muted)}
+.lab-b{padding:6px 16px 14px}
+.lab-b ol{margin:6px 0}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0;background:var(--surface)}
+.q p{margin:0 0 10px;font-weight:600}
+.q .opts{display:grid;gap:6px}
+.q button.opt{text-align:left;font:inherit;font-size:15px;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
+.q button.opt.right{border-color:var(--ok);background:var(--accent-soft)}
+.q button.opt.wrong{border-color:var(--bad);background:var(--bad-bg)}
+.q .why{margin-top:8px;font-size:14px;color:var(--muted)}
+.score{font:600 15px var(--f-body);padding:12px 16px;border-radius:10px;background:var(--accent-soft);margin:16px 0}
+.lesson-foot{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:46px;padding-top:20px;border-top:1px solid var(--line)}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:8px;background:var(--ink);color:var(--bg);text-decoration:none;font:500 14px var(--f-body);border:0;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.done{background:var(--accent);color:var(--surface)}
+
+/* ---------- Map view (inventory) ---------- */
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding-block:20px 6px}
+#q{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);font:inherit}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:99px;padding:6px 12px;font:500 13px var(--f-body);cursor:pointer;display:inline-flex;gap:6px;align-items:center}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.dot{width:8px;height:8px;border-radius:50%;display:inline-block}
+.mapmain{padding-block:10px 60px;max-width:900px}
+.stop{margin-bottom:30px}
+.stop-head{display:flex;gap:14px;align-items:flex-start;margin-bottom:10px}
+.stop-num{font:700 13px var(--f-mono);color:var(--accent);background:var(--accent-soft);border-radius:8px;padding:6px 9px;flex:none}
+.stop-head h2{font-family:var(--f-display);font-weight:500;font-size:20px;line-height:1.25;margin:0}
+.stop-head p{margin:2px 0 0;color:var(--muted);font-size:14px}
+.items{display:grid;gap:8px}
+details.item{background:var(--surface);border:1px solid var(--line);border-radius:10px}
+details.item summary{list-style:none;display:grid;grid-template-columns:auto auto minmax(0,1fr) auto;gap:12px;align-items:center;padding:11px 14px;cursor:pointer}
+details.item summary::-webkit-details-marker{display:none}
+.tick{width:20px;height:20px;border-radius:5px;border:2px solid var(--line);background:var(--bg);cursor:pointer;display:grid;place-items:center;padding:0}
+.tick[aria-pressed="true"]{background:var(--accent);border-color:var(--accent)}
+.tick[aria-pressed="true"]::after{content:"";width:9px;height:5px;border:2px solid var(--surface);border-top:0;border-right:0;transform:rotate(-45deg) translate(1px,-1px)}
+.badge{font:600 11px var(--f-mono);text-transform:uppercase;letter-spacing:.05em;padding:4px 8px;border-radius:6px;white-space:nowrap}
+.ttl{min-width:0}.ttl b{font-weight:600;display:block;line-height:1.35}.ttl small{color:var(--muted);font-size:12.5px}
+.chev{width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-right:4px}
+details[open] .chev{transform:rotate(-135deg)}
+.ibody{padding:0 16px 16px 60px;font-size:15px}
+.ibody h4{margin:6px 0;font-size:12px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.ibody ul{margin:0 0 10px;padding-left:18px}
+.files{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}
+.files code{font-family:var(--f-mono);font-size:12.5px;background:var(--bg);border:1px solid var(--line);padding:1px 5px;border-radius:4px}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.t-lec{color:var(--c-lec);background:var(--c-lec-bg)}.t-ppt{color:var(--c-ppt);background:var(--c-ppt-bg)}.t-vid{color:var(--c-vid);background:var(--c-vid-bg)}.t-code{color:var(--c-code);background:var(--c-code-bg)}.t-task{color:var(--c-task);background:var(--c-task-bg)}.t-ref{color:var(--c-ref);background:var(--c-ref-bg)}
+.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:10px}
+footer{border-top:1px solid var(--line);padding-block:20px 40px;color:var(--muted);font-size:13px}
+
+@media (max-width:880px){
+  .reader{grid-template-columns:minmax(0,1fr);gap:18px;padding-block:16px 60px}
+  .lrail{position:static}
+  .lrail ol{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px}
+  .lrail a{white-space:nowrap;border:1px solid var(--line);background:var(--surface)}
+  .lrail small,.toc{display:none}
+  .ibody{padding:0 14px 14px}
+  .prog .bar{width:70px}
+}
+@media (max-width:520px){
+  details.item summary{grid-template-columns:auto minmax(0,1fr) auto}
+  details.item summary .badge{grid-column:2;justify-self:start;order:3}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#web">Learn Land <small>FullStack.mn · Вэб хөгжүүлэлт</small></a>
+    <nav class="tabs" aria-label="Харагдац">
+      <a href="#web" id="tab-learn">Хичээл унших</a>
+      <a href="#map" id="tab-map">Курсийн бүх файл</a>
+    </nav>
+    <div class="prog"><span id="progtxt">0 / 7 хичээл</span><div class="bar"><i id="progbar"></i></div></div>
+  </div>
+</header>
+
+<div id="view-learn" class="wrap reader">
+  <aside class="lrail">
+    <h2>Хичээлүүд</h2>
+    <ol id="lrail"></ol>
+    <nav class="toc" id="toc" aria-label="Энэ хичээлийн бүлгүүд"></nav>
+  </aside>
+  <div id="lessons">
+
+<!-- ===================== LESSON: WEB FOUNDATIONS ===================== -->
+<article class="lesson" data-lesson="web" hidden>
+  <div class="l-eyebrow">Хичээл 0 · Онол</div>
+  <h1>Вэб хөгжүүлэлтийн суурь</h1>
+  <p class="lead">Код бичихээс өмнө вэб яаж ажилладгийг ойлгоё: frontend ба backend, протокол, DNS, хостинг, сайтаа интернэтэд гаргах.</p>
+  <div class="meta-row">
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/726/mod_resource/content/2/Introduction%20to%20Web%20Design.pptx" target="_blank" rel="noopener">Эх PPT: Introduction to Web Design ↗</a>
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/532/mod_resource/content/1/Introduction%20To%20Web%20Development.pdf" target="_blank" rel="noopener">Эх PDF: Frontend VS Backend ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=2On9vtl6EMs" target="_blank" rel="noopener">Видео 1 ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=UnLwm6RFhVk" target="_blank" rel="noopener">Видео 2: орчин ↗</a>
+  </div>
+  <div class="goals"><h3>Энэ хичээлийн дараа</h3><ul>
+    <li>Frontend, backend, full-stack-ийн ялгааг тайлбарлаж чадна</li>
+    <li>Хөтөчид хаяг бичихээс хуудас гарах хүртэл юу болдгийг алхам алхмаар хэлж чадна</li>
+    <li>HTTP, DNS, хостинг, deployment гэдэг үгсийг зөв хэрэглэнэ</li>
+  </ul></div>
+
+  <h2 id="web-1"><span class="num">01</span>Вэб хөгжүүлэлт гэж юу вэ</h2>
+  <p>Вэб хөгжүүлэлт гэдэг нь хөтөч (Chrome, Safari, Firefox) дээр ажилладаг сайт, аппликейшнийг бүтээх, засварлах ажил. Нэг вэб апп ихэвчлэн хоёр хэсэгтэй байдаг.</p>
+  <p><b>Мөсөн уулын жишээ.</b> Усан дээр харагдах жижиг хэсэг нь frontend. Усан доор нуугдсан том хэсэг нь backend: хэрэглэгч харахгүй ч бүх ачааг үүрдэг.</p>
+  <div class="tbl"><table>
+    <tr><th></th><th>Frontend (клиент тал)</th><th>Backend (сервер тал)</th></tr>
+    <tr><td><b>Хаана ажиллана</b></td><td>Хэрэглэгчийн хөтөч дээр</td><td>Сервер дээр</td></tr>
+    <tr><td><b>Юу хийдэг</b></td><td>Цэс, товч, слайдер, маягт харагдах ба ажиллах байдал</td><td>Өгөгдөл хадгалах, боловсруулах, нэвтрэлт, төлбөр</td></tr>
+    <tr><td><b>Технологи</b></td><td>HTML, CSS, JavaScript; React, Vue, Tailwind</td><td>Node.js, Python, PHP, Java, .NET; MySQL, PostgreSQL, MongoDB</td></tr>
+  </table></div>
+  <p><b>Full-stack хөгжүүлэгч</b> хоёр талыг хоёуланг нь хийж чаддаг. Frontend хөгжүүлэгчийн заавал эзэмших гурвал бол HTML, CSS, JavaScript; дараа нь тухайн үеийн framework-ийг сурна.</p>
+
+  <h3>Технологийн давхарга (stack)</h3>
+  <div class="flow"><span>Хөтөч: HTML · CSS · JS</span><i>⇄</i><span>API (HTTP / JSON)</span><i>⇄</i><span>Сервер код</span><i>⇄</i><span>Өгөгдлийн сан</span></div>
+
+  <h3>Статик ба динамик сайт</h3>
+  <ul>
+    <li><b>Статик:</b> бэлэн HTML файлууд, хүн бүрт ижил харагдана. Хурдан, хямд. Жишээ: портфолио, танилцуулга сайт.</li>
+    <li><b>Динамик:</b> хуудсыг хүсэлт бүрт серверээс өгөгдөл аваад үүсгэнэ. Жишээ: Facebook, онлайн дэлгүүр, банкны апп.</li>
+  </ul>
+  <h3>Өдөр тутмын хэрэгсэл</h3>
+  <p>Код засварлагч (VS Code), хөтөч ба түүний DevTools (F12), Git ба GitHub, терминал, Figma (дизайн).</p>
+
+  <h3>Атом дизайн ба файлын бүтэц</h3>
+  <p>Атом дизайн нь интерфейсийг жижиг хэсгээс том руу бүтээх арга: <b>атом</b> (товч, input) → <b>молекул</b> (хайлтын хэсэг = input + товч) → <b>организм</b> (header) → <b>загвар</b> → <b>хуудас</b>. Төслийн файлыг ч мөн цэгцтэй байлга:</p>
+  <div class="ex"><div class="ex-bar">project/</div><pre>my-site/
+├── index.html
+├── about.html
+├── css/
+│   └── style.css
+├── js/
+│   └── main.js
+└── images/
+    └── logo.png</pre></div>
+
+  <h2 id="web-2"><span class="num">02</span>Хөгжүүлэлтийн шат дараалал</h2>
+  <p>Санаанаас эхлээд ажиллаж буй сайт хүртэл ихэвчлэн 7 шат дамждаг:</p>
+  <div class="tbl"><table>
+    <tr><th>#</th><th>Шат</th><th>Гол асуулт</th><th>Гаралт</th></tr>
+    <tr><td>1</td><td>Шаардлага</td><td>Юу хийх вэ? Хэнд зориулсан бэ?</td><td>Шаардлагын жагсаалт</td></tr>
+    <tr><td>2</td><td>Төлөвлөлт</td><td>Хэдэн хуудас, ямар бүтэц?</td><td>Sitemap, хугацаа</td></tr>
+    <tr><td>3</td><td>Дизайн</td><td>Яаж харагдах вэ?</td><td>Wireframe, Figma загвар</td></tr>
+    <tr><td>4</td><td>Хөгжүүлэлт</td><td>Яаж бүтээх вэ?</td><td>Ажилладаг код</td></tr>
+    <tr><td>5</td><td>Тест</td><td>Алдаа байна уу? Утсан дээр зөв үү?</td><td>Засварласан хувилбар</td></tr>
+    <tr><td>6</td><td>Байршуулалт</td><td>Интернэтэд яаж гаргах вэ?</td><td>Ажиллаж буй URL</td></tr>
+    <tr><td>7</td><td>Арчилгаа</td><td>Яаж шинэчлэх вэ?</td><td>Шинэчлэл, засвар</td></tr>
+  </table></div>
+  <p><b>Waterfall</b>: шат бүрийг дараалан нэг удаа хийнэ; шаардлага тодорхой, өөрчлөгдөхгүй үед тохиромжтой. <b>Agile</b>: богино давталтаар (sprint, 1–2 долоо хоног) жижиг хэсэг гаргаж, санал аваад сайжруулна; ихэнх орчин үеийн баг Agile-аар ажилладаг.</p>
+  <div class="tip"><b>Жишээ:</b> кофе шопын сайт. Шаардлага: цэс, байршил, онлайн захиалга. Дизайн: брэндийн өнгө, утсанд ээлтэй. Хөгжүүлэлт: HTML/CSS, захиалгын маягт. Байршуулалт: Vercel + өөрийн домэйн.</div>
+
+  <h2 id="web-3"><span class="num">03</span>Вэбийн түүх товчоор</h2>
+  <ul class="timeline">
+    <li><b>1969</b>ARPANET: интернэтийн эх сурвалж, хэдэн их сургуулийн компьютер холбогдов</li>
+    <li><b>1983</b>TCP/IP стандарт болов</li>
+    <li><b>1989–91</b>Тим Бернерс-Ли World Wide Web, HTML, HTTP, URL-ийг зохион бүтээв</li>
+    <li><b>1993</b>Mosaic: зурагтай анхны алдартай хөтөч</li>
+    <li><b>1994</b>Netscape хөтөч, W3C байгууллага байгуулагдав</li>
+    <li><b>1995</b>JavaScript, 1996 онд CSS гарав</li>
+    <li><b>2005</b>AJAX: хуудсыг дахин ачаалахгүйгээр өгөгдөл татах (Gmail, Google Maps)</li>
+    <li><b>2007–10</b>iPhone, ухаалаг утас, responsive дизайн, HTML5</li>
+    <li><b>2010-аад</b>React, Vue зэрэг framework, SPA, cloud хостинг</li>
+  </ul>
+  <div class="tbl"><table>
+    <tr><th>Web 1.0</th><th>Web 2.0</th><th>Web 3.0</th></tr>
+    <tr><td>Зөвхөн унших. Статик хуудас.</td><td>Унших + бичих. Сошиал, хэрэглэгч контент үүсгэнэ.</td><td>Эзэмших. Төвлөрсөн бус, blockchain, AI санаанууд.</td></tr>
+  </table></div>
+
+  <h2 id="web-4"><span class="num">04</span>Протоколууд: компьютерууд хэрхэн ярилцдаг вэ</h2>
+  <p><b>Протокол</b> гэдэг нь хоёр компьютер мэдээлэл солилцох дүрэм. Хүмүүс нэг хэлээр ярихтай адил.</p>
+  <h3>TCP/IP давхарга</h3>
+  <div class="tbl"><table>
+    <tr><th>Давхарга</th><th>Үүрэг</th><th>Жишээ</th></tr>
+    <tr><td>4. Application</td><td>Апп хоорондын харилцаа</td><td>HTTP, HTTPS, DNS, SMTP, FTP</td></tr>
+    <tr><td>3. Transport</td><td>Өгөгдлийг найдвартай хүргэх</td><td>TCP, UDP</td></tr>
+    <tr><td>2. Internet</td><td>Хаяглах, зам сонгох</td><td>IP</td></tr>
+    <tr><td>1. Network access</td><td>Физик дамжуулалт</td><td>Ethernet, Wi-Fi</td></tr>
+  </table></div>
+  <h3>IP хаяг ба порт</h3>
+  <p>IP хаяг нь интернэт дэх компьютерийн "гэрийн хаяг". IPv4 нь 32 бит (<code>192.168.1.10</code>), IPv6 нь 128 бит. <b>Порт</b> нь тэр байшингийн "хаалганы дугаар": нэг сервер дээр олон үйлчилгээ зэрэг ажиллана. HTTP 80, HTTPS 443, SSH 22.</p>
+  <h3>TCP ба UDP</h3>
+  <div class="tbl"><table>
+    <tr><th></th><th>TCP</th><th>UDP</th></tr>
+    <tr><td>Холболт</td><td>Эхлээд холболт тогтооно</td><td>Холболтгүй, шууд илгээнэ</td></tr>
+    <tr><td>Найдвартай байдал</td><td>Алга болсныг дахин илгээнэ, дарааллыг хадгална</td><td>Баталгаагүй</td></tr>
+    <tr><td>Хурд</td><td>Удаавтар</td><td>Хурдан</td></tr>
+    <tr><td>Хэрэглээ</td><td>Вэб, имэйл, файл</td><td>Видео дуудлага, онлайн тоглоом, стрийм</td></tr>
+  </table></div>
+  <h3>HTTP: вэбийн протокол</h3>
+  <p>Хөтөч <b>хүсэлт (request)</b> илгээж, сервер <b>хариу (response)</b> буцаана.</p>
+  <div class="ex"><div class="ex-bar">HTTP request → response</div><pre>GET /menu.html HTTP/1.1
+Host: coffee.mn
+
+HTTP/1.1 200 OK
+Content-Type: text/html
+
+&lt;!DOCTYPE html&gt;&lt;html&gt;...&lt;/html&gt;</pre></div>
+  <div class="tbl"><table>
+    <tr><th>Method</th><th>Үүрэг</th><th>Жишээ</th></tr>
+    <tr><td><code>GET</code></td><td>Өгөгдөл авах</td><td>Хуудас, бүтээгдэхүүний жагсаалт харах</td></tr>
+    <tr><td><code>POST</code></td><td>Шинэ өгөгдөл илгээх</td><td>Бүртгүүлэх, захиалга өгөх</td></tr>
+    <tr><td><code>PUT</code> / <code>PATCH</code></td><td>Шинэчлэх</td><td>Профайл засах</td></tr>
+    <tr><td><code>DELETE</code></td><td>Устгах</td><td>Сэтгэгдэл устгах</td></tr>
+  </table></div>
+  <div class="tbl"><table>
+    <tr><th>Код</th><th>Утга</th><th>Жишээ</th></tr>
+    <tr><td>1xx</td><td>Мэдээлэл</td><td>100 Continue</td></tr>
+    <tr><td>2xx</td><td>Амжилттай</td><td>200 OK, 201 Created</td></tr>
+    <tr><td>3xx</td><td>Өөр хаяг руу шилжүүлэх</td><td>301 Moved Permanently, 304 Not Modified</td></tr>
+    <tr><td>4xx</td><td>Клиентийн алдаа</td><td>400 Bad Request, 401, 403 Forbidden, 404 Not Found</td></tr>
+    <tr><td>5xx</td><td>Серверийн алдаа</td><td>500 Internal Server Error, 503 Unavailable</td></tr>
+  </table></div>
+  <p><b>HTTPS</b> = HTTP + TLS шифрлэлт. Нууц үг, картын мэдээлэл замдаа хулгайлагдахгүй. Хаягийн мөрөнд цоож харагдана.</p>
+  <h3>URL-ийн бүтэц</h3>
+  <div class="ex"><div class="ex-bar">URL</div><pre>https://shop.coffee.mn:443/menu/latte?size=large#price
+└─┬─┘   └──────┬─────┘ └┬┘ └────┬───┘ └────┬───┘ └─┬─┘
+protocol     domain    port    path      query  fragment</pre></div>
+  <p>Бусад чухал протокол: <b>DNS</b> (нэр → IP), <b>SMTP/IMAP</b> (имэйл), <b>FTP/SFTP</b> (файл), <b>SSH</b> (сервер рүү аюулгүй нэвтрэх), <b>WebSocket</b> (бодит цагийн чат).</p>
+
+  <h2 id="web-5"><span class="num">05</span>Домэйн ба DNS</h2>
+  <p>Хүн <code>142.250.72.14</code> гэж санахгүй, <code>google.com</code> гэж санана. <b>Домэйн</b> бол IP хаягийн хүнд ойлгомжтой нэр, <b>DNS</b> бол интернэтийн "утасны лавлах".</p>
+  <div class="flow"><span>1. Хөтөч cache шалгана</span><i>→</i><span>2. Resolver (ISP)</span><i>→</i><span>3. Root сервер</span><i>→</i><span>4. .mn TLD сервер</span><i>→</i><span>5. Домэйны NS</span><i>→</i><span>6. IP буцаана</span></div>
+  <div class="tbl"><table>
+    <tr><th>Бичлэг</th><th>Үүрэг</th></tr>
+    <tr><td><code>A</code></td><td>Домэйн → IPv4 хаяг</td></tr>
+    <tr><td><code>AAAA</code></td><td>Домэйн → IPv6 хаяг</td></tr>
+    <tr><td><code>CNAME</code></td><td>Нэг нэрийг өөр нэр рүү заана (www → үндсэн домэйн)</td></tr>
+    <tr><td><code>MX</code></td><td>Имэйл хүлээн авах сервер</td></tr>
+    <tr><td><code>TXT</code></td><td>Баталгаажуулалт, тохиргооны текст</td></tr>
+    <tr><td><code>NS</code></td><td>Тухайн домэйныг хариуцах DNS сервер</td></tr>
+  </table></div>
+  <p><b>Домэйн бүртгүүлэх:</b> нэрээ хайх → бүртгэгч (registrar) сонгох → жил бүр төлөх → DNS бичлэгээ тохируулах.</p>
+
+  <h2 id="web-6"><span class="num">06</span>Сервер, хостинг, VPS</h2>
+  <p><b>Сервер</b> бол 24/7 асаалттай, интернэтэд холбогдсон, хүсэлтэд хариу өгдөг компьютер. <b>Хостинг</b> бол тэр серверийн зай, хүчин чадлыг түрээслэх үйлчилгээ.</p>
+  <div class="tbl"><table>
+    <tr><th>Төрөл</th><th>Тайлбар</th><th>Хэнд тохирох</th></tr>
+    <tr><td>Shared</td><td>Олон сайт нэг серверт. Хямд, хяналт бага.</td><td>Жижиг блог, WordPress</td></tr>
+    <tr><td>VPS</td><td>Физик серверийг виртуалаар хувааж, танд тусгай хэсэг өгнө. Root эрхтэй.</td><td>Өөрийн backend ажиллуулах</td></tr>
+    <tr><td>Dedicated</td><td>Бүтэн физик сервер танд.</td><td>Том ачаалалтай компани</td></tr>
+    <tr><td>Cloud</td><td>AWS, GCP, Azure: хэрэглээгээрээ төлнө, уян тэлнэ.</td><td>Өсөж буй бүтээгдэхүүн</td></tr>
+    <tr><td>Static / PaaS</td><td>GitHub Pages, Vercel, Netlify: кодоо push хийхэд автоматаар гарна.</td><td>Frontend, портфолио</td></tr>
+  </table></div>
+
+  <h2 id="web-7"><span class="num">07</span>Байршуулалт (deployment)</h2>
+  <p>Компьютер дээрх кодоо бусад хүн URL-аар нээж болохуйц болгохыг байршуулалт гэнэ.</p>
+  <h3>Арга 1: GitHub Pages</h3>
+  <div class="ex"><div class="ex-bar">terminal</div><pre>git init
+git add .
+git commit -m "first site"
+git remote add origin https://github.com/ursa/my-site.git
+git push -u origin main
+# GitHub → Settings → Pages → Branch: main → Save</pre></div>
+  <h3>Арга 2: Vercel / Netlify</h3>
+  <p>GitHub repo-гоо холбоно. Цаашид <code>git push</code> хийх болгонд автоматаар шинэ хувилбар гарна. Next.js, React төсөлд хамгийн хялбар.</p>
+  <h3>Арга 3: VPS дээр гараар</h3>
+  <p>SSH-ээр нэвтэрч, Nginx суулгаад, файлаа <code>/var/www/</code> руу хуулна. Хамгийн их хяналттай ч хамгийн их ажилтай.</p>
+  <h3>Домэйн ба HTTPS</h3>
+  <p>DNS-д A эсвэл CNAME бичлэг нэмж серверээ заана. HTTPS-ийг Vercel/Netlify автоматаар өгнө; VPS дээр Let's Encrypt (certbot) ашиглана.</p>
+  <p><b>CI/CD:</b> кодоо push хийхэд тест автоматаар ажиллаж (CI), амжилттай бол автоматаар байршина (CD).</p>
+
+  <h2 id="web-8"><span class="num">08</span>Нэгтгэл: Enter дарахад юу болдог вэ</h2>
+  <ol>
+    <li>Та <code>https://coffee.mn</code> гэж бичээд Enter дарна.</li>
+    <li>Хөтөч DNS-ээс <code>coffee.mn</code>-ийн IP хаягийг асууна.</li>
+    <li>Тэр IP-ийн 443 порт руу TCP холболт тогтооно.</li>
+    <li>TLS handshake хийж, шифрлэсэн суваг үүсгэнэ (HTTPS).</li>
+    <li><code>GET /</code> HTTP хүсэлт илгээнэ.</li>
+    <li>Сервер <code>200 OK</code> болон HTML буцаана.</li>
+    <li>Хөтөч HTML-ийг уншаад CSS, JS, зургийг нэмж татна.</li>
+    <li>DOM ба загварыг нэгтгэж, дэлгэцэнд зурна (render).</li>
+  </ol>
+  <h3>Нэр томъёоны толь</h3>
+  <div class="tbl"><table>
+    <tr><th>Нэр томъёо</th><th>Утга</th></tr>
+    <tr><td>Browser / хөтөч</td><td>Вэб хуудас нээж харуулдаг программ</td></tr>
+    <tr><td>Client / Server</td><td>Хүсэлт илгээгч / хариу өгөгч</td></tr>
+    <tr><td>API</td><td>Программууд хоорондоо ярилцах гэрээ, ихэвчлэн JSON-оор</td></tr>
+    <tr><td>Render</td><td>Кодыг дэлгэц дээрх зураг болгох</td></tr>
+    <tr><td>Deploy</td><td>Кодыг интернэтэд гаргах</td></tr>
+    <tr><td>Repository (repo)</td><td>Git-ээр хянагддаг төслийн хавтас</td></tr>
+  </table></div>
+
+  <h2 id="web-9"><span class="num">✓</span>Өөрийгөө шалга</h2>
+  <div class="quiz" data-quiz="web"></div>
+</article>
+
+<!-- ===================== LESSON: HTML 1 ===================== -->
+<article class="lesson" data-lesson="html1" hidden>
+  <div class="l-eyebrow">Хичээл 1 · 1-р долоо хоног · Лекц + лаб</div>
+  <h1>Веб ба HTML-ийн үндэс</h1>
+  <p class="lead">Вэб хуудас яаж хөтөчид хүрдэг, HTML баримтын бүтэц, гарчиг, текст, жагсаалт, холбоос.</p>
+  <div class="meta-row">
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/742/mod_resource/content/1/HTML-lecture-1.pdf" target="_blank" rel="noopener">Эх PDF ↗</a>
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/739/mod_resource/content/2/HTML%20lecture-1%20examples%20.zip" target="_blank" rel="noopener">Лабын жишээ ZIP ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=MJsnxpJ9U5U" target="_blank" rel="noopener">Видео 3: HTML 1 ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=1ALXvIilH_o" target="_blank" rel="noopener">Видео 4: CS50 ↗</a>
+  </div>
+  <div class="goals"><h3>Энэ хичээлийн дараа</h3><ul>
+    <li>Хөтөч хуудсыг хэрхэн татаж харуулдгийг тайлбарлана</li>
+    <li>Зөв бүтэцтэй HTML баримт эхнээс нь бичнэ</li>
+    <li>Гарчиг, догол мөр, жагсаалт, холбоосыг утгаар нь хэрэглэнэ</li>
+  </ul></div>
+
+  <h2 id="h1-1"><span class="num">01</span>Хэрэгсэл ба ажлын дүрэм</h2>
+  <ul>
+    <li><b>VS Code</b>: код засварлагч. <code>!</code> бичээд <kbd>Tab</kbd> дарвал Emmet HTML-ийн бэлэн бүтэц үүсгэнэ.</li>
+    <li><b>Live Server</b> өргөтгөл: хадгалах бүрт хөтөч автоматаар шинэчлэгдэнэ.</li>
+    <li><b>Chrome DevTools</b>: <kbd>F12</kbd>. Elements таб дээр HTML-ээ шалгана.</li>
+  </ul>
+  <h3>Файл, хавтас нэрлэх дүрэм</h3>
+  <div class="tbl"><table>
+    <tr><th>Зөв ✓</th><th>Буруу ✗</th><th>Яагаад</th></tr>
+    <tr><td><code>ovog-ner-html/</code></td><td><code>Миний HTML/</code></td><td>Кирилл үсэг, хоосон зай серверт асуудал үүсгэнэ</td></tr>
+    <tr><td><code>01-tanilts/index.html</code></td><td><code>Index.HTML</code></td><td>Жижиг үсэг; сервер том, жижиг үсгийг ялгадаг</td></tr>
+    <tr><td><code>about-me.html</code></td><td><code>about me.html</code></td><td>Зайны оронд зураас (-) хэрэглэ</td></tr>
+  </table></div>
+
+  <h2 id="h1-2"><span class="num">02</span>Веб хэрхэн ажилладаг вэ</h2>
+  <p><b>Интернет ба Веб ижил зүйл биш.</b> Интернет бол дэлхийн компьютеруудыг холбосон сүлжээ (зам). Веб бол тэр сүлжээгээр дамждаг хуудаснуудын систем (зам дээгүүр явах машин). Имэйл, тоглоом ч интернетээр явдаг ч веб биш.</p>
+  <div class="flow"><span>1. URL бичнэ</span><i>→</i><span>2. DNS → IP</span><i>→</i><span>3. Сервер рүү хүсэлт</span><i>→</i><span>4. HTML ирнэ</span><i>→</i><span>5. CSS, JS, зураг татна</span><i>→</i><span>6. Дэлгэцэнд зурна</span></div>
+  <h3>Вебийн гурван багана</h3>
+  <div class="tbl"><table>
+    <tr><th>Хэл</th><th>Үүрэг</th><th>Байшингийн жишээ</th></tr>
+    <tr><td><b>HTML</b></td><td>Бүтэц ба агуулга: гарчиг, текст, зураг, холбоос</td><td>Хана, багана, өрөө</td></tr>
+    <tr><td><b>CSS</b></td><td>Харагдах байдал: өнгө, фонт, байршил</td><td>Будаг, тавилга</td></tr>
+    <tr><td><b>JavaScript</b></td><td>Үйлдэл: товч дарахад юу болох</td><td>Цахилгаан, лифт</td></tr>
+  </table></div>
+
+  <h2 id="h1-3"><span class="num">03</span>HTML: тэг, элемент, атрибут</h2>
+  <p><b>HTML = HyperText Markup Language.</b> <i>HyperText</i> гэдэг нь холбоосоор нэг хуудаснаас нөгөө рүү үсрэх текст; <i>Markup</i> гэдэг нь текстэд "энэ гарчиг", "энэ жагсаалт" гэж тэмдэг тавих. HTML бол програмчлалын хэл биш, тэмдэглэгээний хэл.</p>
+  <div class="ex"><div class="ex-bar">элементийн бүтэц</div><pre>&lt;p class="intro"&gt;Сайн уу, би Урсаа!&lt;/p&gt;
+ │    │       │          │            │
+ │    │       │          агуулга      хаах тэг
+ │    │       атрибутын утга
+ │    атрибутын нэр
+ нээх тэг
+
+Нээх тэг + агуулга + хаах тэг = ЭЛЕМЕНТ</pre></div>
+  <h3>Хоосон (void) элемент</h3>
+  <p>Зарим элемент агуулгагүй тул хаах тэггүй: <code>&lt;br&gt;</code> (мөр шилжүүлэх), <code>&lt;hr&gt;</code> (хэвтээ шугам), <code>&lt;img&gt;</code>, <code>&lt;input&gt;</code>, <code>&lt;meta&gt;</code>, <code>&lt;link&gt;</code>.</p>
+
+  <h2 id="h1-4"><span class="num">04</span>HTML баримтын үндсэн бүтэц</h2>
+  <div class="ex"><div class="ex-bar">index.html</div><pre>&lt;!DOCTYPE html&gt;                 &lt;!-- Энэ бол HTML5 баримт --&gt;
+&lt;html lang="mn"&gt;                &lt;!-- Хуудасны хэл: монгол --&gt;
+  &lt;head&gt;                        &lt;!-- Харагдахгүй мэдээлэл --&gt;
+    &lt;meta charset="UTF-8"&gt;      &lt;!-- Кирилл үсэг зөв харагдана --&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;Миний анхны хуудас&lt;/title&gt;   &lt;!-- Табын нэр --&gt;
+  &lt;/head&gt;
+  &lt;body&gt;                        &lt;!-- Дэлгэцэнд харагдах бүх зүйл --&gt;
+    &lt;h1&gt;Сайн байна уу!&lt;/h1&gt;
+    &lt;p&gt;Энэ бол миний анхны вэб хуудас.&lt;/p&gt;
+  &lt;/body&gt;
+&lt;/html&gt;</pre></div>
+  <div class="tip"><b>Шууд кодлох (5 минут):</b> VS Code-д <code>index.html</code> үүсгээд <code>!</code> + Tab дар. <code>lang="en"</code>-ийг <code>"mn"</code> болгож, title-д нэрээ бичээд, body-д h1 ба p нэм. Live Server-ээр нээ.</div>
+
+  <h2 id="h1-5"><span class="num">05</span>Гарчиг ба догол мөр</h2>
+  <p><code>&lt;h1&gt;</code>-ээс <code>&lt;h6&gt;</code> хүртэл 6 түвшний гарчиг бий. Хуудсанд <b>нэг л h1</b> байх нь зөв. Түвшнийг алгасахгүй: h1 → h2 → h3. Текстийг томруулах гэж гарчиг бүү ашигла, томруулах нь CSS-ийн ажил.</p>
+  <div class="ex" data-live><template><h1>Ursa Bat</h1>
+<h2>Миний тухай</h2>
+<p>Би frontend хөгжүүлэгч болохоор суралцаж байна.</p>
+<h2>Сонирхол</h2>
+<p>React, дизайн, тоглоом.</p></template></div>
+
+  <h2 id="h1-6"><span class="num">06</span>Текстийг утгатай тэмдэглэх</h2>
+  <div class="tbl"><table>
+    <tr><th>Тэг</th><th>Утга</th><th>Харагдах байдал</th></tr>
+    <tr><td><code>&lt;strong&gt;</code></td><td>Чухал</td><td><strong>тод</strong></td></tr>
+    <tr><td><code>&lt;em&gt;</code></td><td>Онцлох, өргөлт</td><td><em>налуу</em></td></tr>
+    <tr><td><code>&lt;mark&gt;</code></td><td>Тодруулсан</td><td><mark>шар дэвсгэр</mark></td></tr>
+    <tr><td><code>&lt;small&gt;</code></td><td>Жижиг тайлбар</td><td><small>жижиг</small></td></tr>
+    <tr><td><code>&lt;sup&gt;</code> / <code>&lt;sub&gt;</code></td><td>Дээд / доод индекс</td><td>x<sup>2</sup>, H<sub>2</sub>O</td></tr>
+    <tr><td><code>&lt;br&gt;</code></td><td>Мөр шилжүүлэх</td><td>(хоосон элемент)</td></tr>
+  </table></div>
+  <p><code>&lt;b&gt;</code>, <code>&lt;i&gt;</code> ч тод, налуу харагдана, гэхдээ утга агуулахгүй. Дэлгэц уншигч (хараагүй хүний программ) <code>strong</code>, <code>em</code>-ийг онцолж уншдаг тул эдгээрийг илүүд үз.</p>
+  <div class="ex" data-live><template><p>HTML бол <strong>програмчлалын хэл биш</strong>,
+<em>тэмдэглэгээний</em> хэл.</p>
+<p>Ус = H<sub>2</sub>O, талбай = a<sup>2</sup></p></template></div>
+
+  <h2 id="h1-7"><span class="num">07</span>Жагсаалт: ul, ol, li</h2>
+  <ul>
+    <li><code>&lt;ul&gt;</code> (unordered): дараалал чухал биш, цэгтэй</li>
+    <li><code>&lt;ol&gt;</code> (ordered): дараалал чухал, дугаартай</li>
+    <li><code>&lt;li&gt;</code>: жагсаалтын нэг мөр; заавал ul эсвэл ol дотор</li>
+  </ul>
+  <div class="ex" data-live><template><h3>Орц</h3>
+<ul>
+  <li>Гурил 2 аяга</li>
+  <li>Амтлагч
+    <ul>
+      <li>Давс</li>
+      <li>Перец</li>
+    </ul>
+  </li>
+</ul>
+<h3>Хийх арга</h3>
+<ol>
+  <li>Гурилаа зуурна</li>
+  <li>Гоймон хэрчинэ</li>
+  <li>Буцалсан усанд хийнэ</li>
+</ol></template></div>
+  <div class="tip"><b>Давхар жагсаалт:</b> дотоод <code>&lt;ul&gt;</code> нь <code>&lt;li&gt;</code>-ийн <i>дотор</i> байна, ul-ийн шууд хүүхэд биш.</div>
+
+  <h2 id="h1-8"><span class="num">08</span>Холбоос: &lt;a&gt; элемент</h2>
+  <div class="ex" data-live><template><!-- Гадны сайт, шинэ табд -->
+<a href="https://developer.mozilla.org" target="_blank">MDN баримт</a><br>
+
+<!-- Өөр хуудас (relative) -->
+<a href="about.html">Миний тухай</a><br>
+
+<!-- Хуудсан доторх хэсэг рүү (#id) -->
+<a href="#orts">Орц руу үсрэх</a><br>
+
+<!-- Имэйл -->
+<a href="mailto:hello@example.com">Имэйл бичих</a></template></div>
+  <p><code>href</code> нь хаашаа очихыг заана. <code>target="_blank"</code> шинэ таб нээнэ. Хуудсан доторх холбоос нь <code>href="#orts"</code>, очих газар нь <code>id="orts"</code>.</p>
+
+  <h2 id="h1-9"><span class="num">09</span>Файлын зам: relative ба absolute</h2>
+  <div class="ex"><div class="ex-bar">бүтэц</div><pre>site/
+├── index.html
+├── about.html
+├── images/logo.png
+└── pages/contact.html</pre></div>
+  <div class="tbl"><table>
+    <tr><th>Хаанаас</th><th>Хаашаа</th><th>Зам</th></tr>
+    <tr><td>index.html</td><td>about.html</td><td><code>about.html</code> (ижил хавтас)</td></tr>
+    <tr><td>index.html</td><td>logo.png</td><td><code>images/logo.png</code> (доош)</td></tr>
+    <tr><td>pages/contact.html</td><td>index.html</td><td><code>../index.html</code> (нэг дээш)</td></tr>
+    <tr><td>Хаанаас ч</td><td>Гадны сайт</td><td><code>https://...</code> (absolute)</td></tr>
+  </table></div>
+
+  <h2 id="h1-10"><span class="num">10</span>Лаборатори (20 оноо)</h2>
+  <div class="lab"><div class="lab-h"><b>Лаб 1 · Өөрийн profile хуудас</b><span>бүтэц · гарчиг · текст</span></div><div class="lab-b"><ol>
+    <li><code>lab1-profile/index.html</code> үүсгэ</li>
+    <li>Баримтын бүтэц: <code>lang</code>, <code>charset</code>, <code>title</code>-д нэрээ</li>
+    <li>Нэг <code>h1</code> (нэр), гурван <code>h2</code>: Миний тухай, Сонирхол, Зорилго</li>
+    <li>Хэсэг бүрт 2-оос дээш өгүүлбэртэй <code>p</code>; <code>strong</code>, <code>em</code>-ийг утгаар нь</li>
+    <li>Хэсгүүдийн хооронд <code>hr</code>; Live Server-ээр шалга</li>
+  </ol></div></div>
+  <div class="lab"><div class="lab-h"><b>Лаб 2 · Дуртай хоолны жор</b><span>жагсаалт · холбоос</span></div><div class="lab-b"><ol>
+    <li><code>lab2-jor/index.html</code>; хуудасны эхэнд хэсгүүд рүү үсрэх цэс</li>
+    <li>"Орц" хэсэгт <code>id</code>; <code>ul</code>-д 6-аас дээш орц</li>
+    <li>Нэг орцонд давхар <code>ul</code> (амтлагч → давс, перец)</li>
+    <li>"Хийх арга": <code>ol</code>, 5-аас дээш алхам, зөв дарааллаар</li>
+    <li>Жорын эх сурвалж руу <code>target="_blank"</code> гадны холбоос</li>
+  </ol></div></div>
+  <p class="note">Гэрийн даалгавар: Лаб 1–2-оо дуусгаад багшид илгээ.</p>
+
+  <h2 id="h1-11"><span class="num">✓</span>Өөрийгөө шалга</h2>
+  <div class="quiz" data-quiz="html1"></div>
+</article>
+
+<!-- ===================== LESSON: HTML 2 ===================== -->
+<article class="lesson" data-lesson="html2" hidden>
+  <div class="l-eyebrow">Хичээл 2 · 1-р долоо хоног · Лекц + лаб</div>
+  <h1>Холбоос, зураг, хүснэгт, маягт, семантик HTML</h1>
+  <p class="lead">Олон хуудастай сайт холбох, зураг оруулах, хүснэгт, хэрэглэгчээс мэдээлэл авах маягт, утга бүхий бүтэц.</p>
+  <div class="meta-row">
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/743/mod_resource/content/1/HTML%20Lecture%202.pdf" target="_blank" rel="noopener">Эх PDF ↗</a>
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/741/mod_resource/content/1/HTML%20Lecture%202%20examples.zip" target="_blank" rel="noopener">Лабын жишээ ZIP ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=o7c-VXeMmGY" target="_blank" rel="noopener">Видео 5 ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=tquQYzrE2QQ" target="_blank" rel="noopener">Видео 6 ↗</a>
+  </div>
+  <div class="goals"><h3>Энэ хичээлийн дараа</h3><ul>
+    <li>Зургийг зөв замаар, <code>alt</code>-тай оруулна</li>
+    <li>Хүснэгт, маягтыг бүтэцтэй бичнэ</li>
+    <li>div-ийн оронд семантик тэг хэрэглэж, id ба class-ыг ялгана</li>
+  </ul></div>
+
+  <h2 id="h2-0"><span class="num">00</span>Давтлага</h2>
+  <ul>
+    <li>HTML баримтын үндсэн 4 хэсэг юу вэ? (<code>DOCTYPE</code>, <code>html</code>, <code>head</code>, <code>body</code>)</li>
+    <li><code>ul</code> ба <code>ol</code>-ийн ялгаа?</li>
+    <li>Хуудсан доторх хэсэг рүү үсрэх холбоос яаж бичих вэ?</li>
+  </ul>
+
+  <h2 id="h2-1"><span class="num">01</span>Зураг: &lt;img&gt;</h2>
+  <div class="ex"><div class="ex-bar">img</div><pre>&lt;img src="images/logo.png" alt="PIA академийн лого" width="120"&gt;</pre></div>
+  <ul>
+    <li><code>src</code>: зургийн зам (relative эсвэл URL)</li>
+    <li><code>alt</code>: зураг ачаалагдахгүй үед болон дэлгэц уншигчид зориулсан тайлбар. <b>Заавал бич.</b> Чимэглэлийн зураг бол <code>alt=""</code>.</li>
+    <li><code>width</code>/<code>height</code>: хуудас ачаалахад "үсрэх"-ээс сэргийлнэ</li>
+  </ul>
+  <div class="ex" data-live><template><figure>
+  <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='110'%3E%3Crect width='220' height='110' rx='10' fill='%230f7a5c'/%3E%3Ctext x='110' y='64' font-size='22' text-anchor='middle' fill='white' font-family='sans-serif'%3EГовь%3C/text%3E%3C/svg%3E"
+       alt="Говийн аяллын зураг" width="220" height="110">
+  <figcaption>Зураг 1. Говийн аялал</figcaption>
+</figure></template></div>
+  <p class="note"><code>&lt;figure&gt;</code> + <code>&lt;figcaption&gt;</code> нь зураг ба түүний тайлбарыг нэг утгатай болгоно.</p>
+
+  <h2 id="h2-2"><span class="num">02</span>Хүснэгт: table</h2>
+  <div class="tbl"><table>
+    <tr><th>Тэг</th><th>Үүрэг</th></tr>
+    <tr><td><code>table</code></td><td>Хүснэгт</td></tr>
+    <tr><td><code>caption</code></td><td>Хүснэгтийн гарчиг</td></tr>
+    <tr><td><code>thead</code> / <code>tbody</code> / <code>tfoot</code></td><td>Толгой / их бие / хөл хэсэг</td></tr>
+    <tr><td><code>tr</code></td><td>Мөр (table row)</td></tr>
+    <tr><td><code>th</code> / <code>td</code></td><td>Гарчгийн нүд / өгөгдлийн нүд</td></tr>
+    <tr><td><code>colspan</code> / <code>rowspan</code></td><td>Нүдийг хэвтээ / босоо чиглэлд нэгтгэх</td></tr>
+  </table></div>
+  <div class="ex" data-live><template><style>table{border-collapse:collapse;font-family:sans-serif;font-size:14px}th,td{border:1px solid #999;padding:6px 10px}th{background:#e1f2eb}</style>
+<table>
+  <caption>7 хоногийн хуваарь</caption>
+  <thead>
+    <tr><th>Цаг</th><th>Даваа</th><th>Мягмар</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>09:00</td><td>HTML</td><td>CSS</td></tr>
+    <tr><td>11:00</td><td colspan="2">Лаборатори (2 өдөр)</td></tr>
+    <tr><td>13:00</td><td>Завсарлага</td><td>JS</td></tr>
+  </tbody>
+</table></template></div>
+  <div class="tip"><b>Анхаар:</b> хүснэгтийг зөвхөн хүснэгтэн өгөгдөлд хэрэглэ. Хуудасны layout-ийг хүснэгтээр хийх нь хуучирсан арга; тэрийг CSS Flexbox/Grid хийнэ.</div>
+
+  <h2 id="h2-3"><span class="num">03</span>Маягт (form)</h2>
+  <p>Маягт нь хэрэглэгчээс мэдээлэл авна: бүртгэл, нэвтрэх, хайлт, санал асуулга.</p>
+  <ul>
+    <li><code>&lt;form action="#" method="post"&gt;</code>: <code>action</code> хаашаа илгээх, <code>method</code> GET эсвэл POST</li>
+    <li><code>&lt;label for="name"&gt;</code> ба <code>&lt;input id="name"&gt;</code>: for ба id таарвал label дарахад input идэвхжинэ</li>
+    <li><code>name</code>: серверт очих өгөгдлийн нэр</li>
+    <li><code>&lt;fieldset&gt;</code> + <code>&lt;legend&gt;</code>: холбоотой талбаруудыг бүлэглэнэ</li>
+  </ul>
+  <div class="tbl"><table>
+    <tr><th>input type</th><th>Хэрэглээ</th></tr>
+    <tr><td><code>text</code>, <code>email</code>, <code>password</code></td><td>Текст, имэйл (формат шалгана), нууц үг (далдлана)</td></tr>
+    <tr><td><code>number</code></td><td>Тоо; <code>min</code>, <code>max</code>, <code>step</code></td></tr>
+    <tr><td><code>date</code>, <code>color</code>, <code>range</code></td><td>Огноо сонгогч, өнгө, гулсуур</td></tr>
+    <tr><td><code>radio</code></td><td>Олноос <b>нэг</b>-ийг сонгох (ижил <code>name</code>)</td></tr>
+    <tr><td><code>checkbox</code></td><td><b>Олон</b>-ыг сонгох</td></tr>
+    <tr><td><code>select</code> + <code>option</code></td><td>Унждаг жагсаалт</td></tr>
+    <tr><td><code>textarea</code></td><td>Олон мөр текст</td></tr>
+  </table></div>
+  <p>Шалгалтын атрибут: <code>required</code> (заавал), <code>placeholder</code> (жишээ текст), <code>minlength</code>, <code>pattern</code>.</p>
+  <div class="ex" data-live><template><style>form{font-family:sans-serif;font-size:14px;display:grid;gap:10px;max-width:340px}input,select,textarea{font:inherit;padding:6px;width:100%;box-sizing:border-box}fieldset{border:1px solid #bbb;border-radius:6px}label.in{display:inline;margin-right:8px}</style>
+<form action="#" method="post" onsubmit="event.preventDefault()">
+  <label for="nm">Нэр *</label>
+  <input id="nm" name="name" type="text" required placeholder="Бат">
+
+  <label for="age">Нас</label>
+  <input id="age" name="age" type="number" min="16" max="60">
+
+  <fieldset>
+    <legend>Түвшин</legend>
+    <label class="in"><input type="radio" name="lvl" value="new"> Анхан</label>
+    <label class="in"><input type="radio" name="lvl" value="mid"> Дунд</label>
+  </fieldset>
+
+  <fieldset>
+    <legend>Сонирхол</legend>
+    <label class="in"><input type="checkbox" name="i" value="html"> HTML</label>
+    <label class="in"><input type="checkbox" name="i" value="css"> CSS</label>
+  </fieldset>
+
+  <label for="city">Хот</label>
+  <select id="city" name="city">
+    <option>Улаанбаатар</option><option>Дархан</option>
+  </select>
+
+  <label for="msg">Санал</label>
+  <textarea id="msg" name="msg" rows="3"></textarea>
+
+  <button type="submit">Илгээх</button>
+</form></template></div>
+
+  <h2 id="h2-4"><span class="num">04</span>Block ба inline элемент</h2>
+  <div class="tbl"><table>
+    <tr><th></th><th>Block</th><th>Inline</th></tr>
+    <tr><td>Өргөн</td><td>Бүтэн мөрийг эзэлнэ</td><td>Агуулгынхаа хэрээр</td></tr>
+    <tr><td>Шинэ мөр</td><td>Шинэ мөрөөс эхэлнэ</td><td>Текстийн урсгалд үргэлжилнэ</td></tr>
+    <tr><td>Жишээ</td><td><code>div h1 p ul li section form</code></td><td><code>span a strong em img</code></td></tr>
+  </table></div>
+  <p><code>&lt;div&gt;</code> бол утгагүй block "хайрцаг", <code>&lt;span&gt;</code> бол утгагүй inline "хайрцаг". Хоёулаа CSS-ээр загварчлах, бүлэглэхэд хэрэглэгдэнэ.</p>
+  <div class="ex" data-live><template><div style="background:#e6edfb;padding:6px">div 1 (block)</div>
+<div style="background:#fbebe2;padding:6px">div 2 (block)</div>
+<p>Энэ бол <span style="background:#f9e4ec">span (inline)</span> бөгөөд
+<a href="#">холбоос ч inline</a>.</p></template></div>
+
+  <h2 id="h2-5"><span class="num">05</span>Семантик HTML</h2>
+  <p>Семантик тэг нь агуулгын <b>утгыг</b> илэрхийлнэ. Хүн, хайлтын систем (SEO), дэлгэц уншигч бүгд хуудсыг илүү сайн ойлгоно. Код уншихад ч хялбар.</p>
+  <div class="ex"><div class="ex-bar">semantic layout</div><pre>┌──────────────── &lt;header&gt; ─────────────────┐
+│ лого        &lt;nav&gt; Нүүр | Мэдээ | Холбоо     │
+├──────────────── &lt;main&gt; ──────┬─ &lt;aside&gt; ──┤
+│ &lt;section&gt;                     │ Шилдэг     │
+│   &lt;article&gt; Мэдээ 1           │ мэдээ      │
+│   &lt;article&gt; Мэдээ 2           │            │
+├──────────────── &lt;footer&gt; ────┴────────────┤
+│ © 2026 · холбоо барих                       │
+└─────────────────────────────────────────────┘</pre></div>
+  <div class="tbl"><table>
+    <tr><th>Тэг</th><th>Хэзээ</th></tr>
+    <tr><td><code>header</code></td><td>Хуудас эсвэл хэсгийн толгой (лого, гарчиг)</td></tr>
+    <tr><td><code>nav</code></td><td>Үндсэн цэс, навигаци</td></tr>
+    <tr><td><code>main</code></td><td>Хуудасны гол агуулга (нэг л удаа)</td></tr>
+    <tr><td><code>section</code></td><td>Гарчигтай сэдэвчилсэн хэсэг</td></tr>
+    <tr><td><code>article</code></td><td>Бие даан утга илэрхийлэх агуулга: мэдээ, блог пост, карт</td></tr>
+    <tr><td><code>aside</code></td><td>Хажуугийн нэмэлт мэдээлэл</td></tr>
+    <tr><td><code>footer</code></td><td>Хөл хэсэг</td></tr>
+    <tr><td><code>time</code></td><td>Огноо: <code>&lt;time datetime="2026-11-07"&gt;11 сарын 7&lt;/time&gt;</code></td></tr>
+  </table></div>
+
+  <h2 id="h2-6"><span class="num">06</span>id ба class</h2>
+  <div class="tbl"><table>
+    <tr><th></th><th><code>id</code></th><th><code>class</code></th></tr>
+    <tr><td>Давтагдах эсэх</td><td>Хуудсанд <b>нэг л</b> удаа</td><td>Олон элементэд</td></tr>
+    <tr><td>Нэг элементэд</td><td>Нэг id</td><td>Олон class: <code>class="card big"</code></td></tr>
+    <tr><td>Хэрэглээ</td><td>Хуудсан доторх холбоос, JS</td><td>CSS загвар</td></tr>
+    <tr><td>CSS-д</td><td><code>#menu</code></td><td><code>.card</code></td></tr>
+  </table></div>
+
+  <h2 id="h2-7"><span class="num">07</span>Тусгай тэмдэгт ба тайлбар</h2>
+  <div class="tbl"><table>
+    <tr><th>Тэмдэгт</th><th>Entity</th><th>Яагаад</th></tr>
+    <tr><td>&lt; &gt;</td><td><code>&amp;lt;</code> <code>&amp;gt;</code></td><td>Хөтөч тэг гэж ойлгохоос сэргийлнэ</td></tr>
+    <tr><td>&amp;</td><td><code>&amp;amp;</code></td><td>Entity-ийн эхлэл тул</td></tr>
+    <tr><td>©</td><td><code>&amp;copy;</code></td><td>Зохиогчийн эрх</td></tr>
+    <tr><td>(зай)</td><td><code>&amp;nbsp;</code></td><td>Таслагдахгүй зай</td></tr>
+  </table></div>
+  <p>Тайлбар: <code>&lt;!-- энэ харагдахгүй --&gt;</code>. Хөтөч алгасна; өөртөө болон багийнханд тэмдэглэл үлдээхэд.</p>
+
+  <h2 id="h2-8"><span class="num">08</span>Түгээмэл алдаа</h2>
+  <div class="tbl"><table>
+    <tr><th>Буруу ✗</th><th>Зөв ✓</th></tr>
+    <tr><td><code>&lt;p&gt;Текст</code> (хаагаагүй)</td><td><code>&lt;p&gt;Текст&lt;/p&gt;</code></td></tr>
+    <tr><td><code>&lt;b&gt;&lt;i&gt;x&lt;/b&gt;&lt;/i&gt;</code> (буруу дараалал)</td><td><code>&lt;b&gt;&lt;i&gt;x&lt;/i&gt;&lt;/b&gt;</code></td></tr>
+    <tr><td><code>&lt;img src="a.png"&gt;</code></td><td><code>&lt;img src="a.png" alt="..."&gt;</code></td></tr>
+    <tr><td><code>&lt;ul&gt;&lt;p&gt;...&lt;/p&gt;&lt;/ul&gt;</code></td><td>ul-ийн шууд хүүхэд зөвхөн <code>li</code></td></tr>
+    <tr><td>Хоёр элементэд ижил <code>id</code></td><td>Давтагдах бол <code>class</code></td></tr>
+    <tr><td><code>src="C:\Users\...\a.png"</code></td><td><code>src="images/a.png"</code> (relative)</td></tr>
+  </table></div>
+
+  <h2 id="h2-9"><span class="num">09</span>Лаборатори (34 оноо)</h2>
+  <div class="lab"><div class="lab-h"><b>Лаб 3 · Хичээлийн хуваарь</b><span>table · img · ~30 мин</span></div><div class="lab-b"><ol>
+    <li><code>lecture2-hicheel-huvaari/index.html</code> ба <code>images/</code> хавтас</li>
+    <li>Лого зургийг relative замаар, утгатай <code>alt</code>-тай</li>
+    <li><code>table</code>: <code>caption</code>, <code>thead</code>, <code>tbody</code>; гарчигт <code>th</code></li>
+    <li>Багана: цаг ба 7 хоногийн өдрүүд; дор хаяж нэг нүдэнд <code>colspan</code> эсвэл <code>rowspan</code></li>
+  </ol></div></div>
+  <div class="lab"><div class="lab-h"><b>Лаб 4 · Санал асуулгын маягт</b><span>form · ~40 мин</span></div><div class="lab-b"><ol>
+    <li><code>form action="#" method="post"</code></li>
+    <li>Нэр (<code>required</code>), имэйл, нас (<code>number</code>, 16–60)</li>
+    <li>4 сонголттой radio, 4-өөс дээш checkbox: тус бүр <code>fieldset</code> + <code>legend</code></li>
+    <li><code>select</code>, <code>textarea</code>, илгээх товч; label бүр input-тэйгээ холбогдсон</li>
+  </ol></div></div>
+  <div class="lab"><div class="lab-h"><b>Лаб 5 · Мэдээний сайтын нүүр</b><span>semantic · div, span хориотой · ~35 мин</span></div><div class="lab-b"><ol>
+    <li><code>lecture2-medee/index.html</code>; эхлээд цаасан дээр бүтцээ зур</li>
+    <li><code>header</code>: <code>h1</code> ба <code>nav</code> → 4-өөс дээш холбоостой <code>ul</code></li>
+    <li><code>main</code>: 3-аас дээш <code>article</code>, тус бүр <code>h2</code>, <code>time datetime</code>, зохиогч, товч агуулга</li>
+    <li><code>aside</code> ба <code>footer</code> нэм</li>
+  </ol></div></div>
+  <p class="note">Дараагийнх нь HTML бие даалт.</p>
+
+  <h2 id="h2-10"><span class="num">✓</span>Өөрийгөө шалга</h2>
+  <div class="quiz" data-quiz="html2"></div>
+</article>
+
+<!-- ===================== LESSON: CSS 1 ===================== -->
+<article class="lesson" data-lesson="css1" hidden>
+  <div class="l-eyebrow">Хичээл 4 · 2-р долоо хоног · Лекц + лаб</div>
+  <h1>CSS үндэс ба Box model</h1>
+  <p class="lead">CSS дүрэм, HTML-д холбох арга, сонгогч, cascade ба specificity, өнгө, нэгж, фонт, box model, display, position.</p>
+  <div class="meta-row">
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/744/mod_resource/content/1/CSS%20Lecture%201.pdf" target="_blank" rel="noopener">Эх PDF ↗</a>
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/232/mod_resource/content/1/css.pdf" target="_blank" rel="noopener">Нэмэлт CSS PDF ↗</a>
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/745/mod_resource/content/1/CSS-1.zip" target="_blank" rel="noopener">Лабын жишээ ZIP ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=0BBSv6hk8uE" target="_blank" rel="noopener">Видео 7: CSS ↗</a>
+  </div>
+  <div class="goals"><h3>Энэ хичээлийн дараа</h3><ul>
+    <li>CSS-ийг гадаад файлаар холбож, дүрэм бичнэ</li>
+    <li>Зөв сонгогч сонгож, аль дүрэм "ялах"-ыг specificity-гээр тооцно</li>
+    <li>Box model-ийг ойлгож, элементийн бодит хэмжээг тооцоолно</li>
+  </ul></div>
+
+  <h2 id="c1-1"><span class="num">01</span>CSS гэж юу вэ</h2>
+  <p><b>CSS = Cascading Style Sheets.</b> HTML нь "юу" байгааг, CSS нь "яаж харагдах"-ыг шийднэ. <i>Cascading</i> (шаталсан урсгал) гэдэг нь олон дүрэм нэг элементэд хамаарахад тодорхой дүрмээр аль нь хэрэгжихийг шийддэгийг хэлнэ.</p>
+  <div class="ex"><div class="ex-bar">дүрмийн бүтэц</div><pre>h1 {                 ← сонгогч (selector)
+  color: tomato;     ← шинж чанар: утга;  (declaration)
+  font-size: 32px;
+}</pre></div>
+
+  <h2 id="c1-2"><span class="num">02</span>CSS-ийг HTML-д холбох 3 арга</h2>
+  <div class="ex"><div class="ex-bar">1. inline · 2. internal · 3. external</div><pre>&lt;!-- 1. Inline: зөвхөн нэг элементэд. Зайлсхий. --&gt;
+&lt;p style="color: red;"&gt;Улаан&lt;/p&gt;
+
+&lt;!-- 2. Internal: head доторх &lt;style&gt; --&gt;
+&lt;style&gt;
+  p { color: blue; }
+&lt;/style&gt;
+
+&lt;!-- 3. External: тусдаа файл. ✓ Хамгийн зөв --&gt;
+&lt;link rel="stylesheet" href="css/style.css"&gt;</pre></div>
+  <p>External арга нэг CSS файлыг олон хуудсанд дахин хэрэглэх боломж олгоно, хөтөч ч cache хийнэ.</p>
+
+  <h2 id="c1-3"><span class="num">03</span>Сонгогч (selectors)</h2>
+  <div class="tbl"><table>
+    <tr><th>Сонгогч</th><th>Жишээ</th><th>Юуг сонгох</th></tr>
+    <tr><td>Бүгд</td><td><code>*</code></td><td>Бүх элемент</td></tr>
+    <tr><td>Тэг</td><td><code>p</code></td><td>Бүх p</td></tr>
+    <tr><td>Class</td><td><code>.card</code></td><td>class="card"-тай бүгд</td></tr>
+    <tr><td>Id</td><td><code>#hero</code></td><td>id="hero" нэг элемент</td></tr>
+    <tr><td>Бүлэг</td><td><code>h1, h2</code></td><td>h1 болон h2</td></tr>
+    <tr><td>Атрибут</td><td><code>input[type="email"]</code></td><td>Имэйл input</td></tr>
+  </table></div>
+  <h3>Нийлмэл сонгогч (combinators)</h3>
+  <div class="tbl"><table>
+    <tr><th>Бичлэг</th><th>Утга</th></tr>
+    <tr><td><code>nav a</code></td><td>nav-ийн доторх <b>бүх</b> a (ач, гуч ч хамаарна)</td></tr>
+    <tr><td><code>ul &gt; li</code></td><td>ul-ийн <b>шууд хүүхэд</b> li</td></tr>
+    <tr><td><code>h2 + p</code></td><td>h2-ийн <b>яг дараах</b> p</td></tr>
+    <tr><td><code>h2 ~ p</code></td><td>h2-ийн дараах <b>бүх</b> ах дүү p</td></tr>
+  </table></div>
+  <h3>Pseudo-class ба pseudo-element</h3>
+  <p><b>Pseudo-class</b> (<code>:</code>) нь элементийн <i>төлөв</i>: <code>:hover</code>, <code>:focus</code>, <code>:first-child</code>, <code>:nth-child(2n)</code>, <code>:visited</code>. <b>Pseudo-element</b> (<code>::</code>) нь элементийн <i>хэсэг</i>: <code>::before</code>, <code>::after</code>, <code>::first-letter</code>, <code>::placeholder</code>.</p>
+  <div class="ex" data-live><template><style>
+  ul{font-family:sans-serif;padding-left:20px}
+  li:nth-child(odd){background:#e1f2eb}
+  li:first-child{font-weight:bold}
+  a{color:#2357c5}
+  a:hover{color:tomato;text-decoration:none}
+  .new::after{content:" NEW";color:tomato;font-size:11px}
+</style>
+<ul>
+  <li>Эхний мөр (first-child)</li>
+  <li class="new">Хоёр дахь</li>
+  <li>Гурав дахь (odd)</li>
+  <li><a href="#">Миний дээр хулганаа аваач</a></li>
+</ul></template></div>
+
+  <h2 id="c1-4"><span class="num">04</span>Cascade, specificity, удамшил</h2>
+  <p>Нэг элементэд хэд хэдэн дүрэм зөрчилдвөл хөтөч дараах дарааллаар шийднэ:</p>
+  <ol>
+    <li><b>Ач холбогдол:</b> <code>!important</code> бүгдийг дарна (бараг хэрэглэхгүй)</li>
+    <li><b>Specificity:</b> илүү тодорхой сонгогч ялна</li>
+    <li><b>Дараалал:</b> specificity тэнцүү бол <i>сүүлд бичсэн</i> нь ялна</li>
+  </ol>
+  <div class="tbl"><table>
+    <tr><th>Сонгогч</th><th>Оноо (id-class-tag)</th></tr>
+    <tr><td><code>p</code></td><td>0-0-1</td></tr>
+    <tr><td><code>.card p</code></td><td>0-1-1</td></tr>
+    <tr><td><code>.card.big</code></td><td>0-2-0</td></tr>
+    <tr><td><code>#header</code></td><td>1-0-0</td></tr>
+    <tr><td><code>#header .nav a:hover</code></td><td>1-2-1</td></tr>
+    <tr><td><code>style="..."</code> (inline)</td><td>бүгдээс өндөр</td></tr>
+  </table></div>
+  <p>Оноог зүүнээс баруун тийш харьцуулна: нэг id нь хэдэн ч class-аас хүчтэй.</p>
+  <p><b>Удамшил:</b> <code>color</code>, <code>font-family</code>, <code>line-height</code> зэрэг текстийн шинж чанар эцгээс хүүхдэд уламжлагдана. <code>margin</code>, <code>padding</code>, <code>border</code>, <code>background</code> уламжлагдахгүй.</p>
+  <div class="ex" data-live><template><style>
+  p{color:gray}
+  .note{color:green}
+  #special{color:tomato}
+  p{color:blue}   /* p-г дахин бичсэн ч .note, #special ялна */
+</style>
+<p>Энгийн p → цэнхэр (сүүлийн p дүрэм)</p>
+<p class="note">.note → ногоон (0-1-0 &gt; 0-0-1)</p>
+<p class="note" id="special">#special → улаан (1-0-0)</p></template></div>
+
+  <h2 id="c1-5"><span class="num">05</span>Өнгө ба хэмжих нэгж</h2>
+  <div class="tbl"><table>
+    <tr><th>Арга</th><th>Жишээ</th><th>Тайлбар</th></tr>
+    <tr><td>Нэр</td><td><code>tomato</code></td><td>140 гаруй бэлэн нэр</td></tr>
+    <tr><td>HEX</td><td><code>#0f7a5c</code></td><td>RRGGBB, 16-тын тоо</td></tr>
+    <tr><td>RGB / RGBA</td><td><code>rgb(15 122 92 / .5)</code></td><td>Улаан, ногоон, цэнхэр 0–255; a = тунгалаг</td></tr>
+    <tr><td>HSL</td><td><code>hsl(160 78% 27%)</code></td><td>Өнгө, ханалт, гэрэлтэлт: тохируулахад хялбар</td></tr>
+  </table></div>
+  <div class="tbl"><table>
+    <tr><th>Нэгж</th><th>Төрөл</th><th>Юунаас хамаарах</th><th>Хэзээ</th></tr>
+    <tr><td><code>px</code></td><td>Үнэмлэхүй</td><td>Дэлгэцийн цэг</td><td>Border, жижиг зай</td></tr>
+    <tr><td><code>%</code></td><td>Харьцангуй</td><td>Эцэг элемент</td><td>Өргөн</td></tr>
+    <tr><td><code>em</code></td><td>Харьцангуй</td><td>Өөрийн/эцгийн font-size</td><td>Товчны padding</td></tr>
+    <tr><td><code>rem</code></td><td>Харьцангуй</td><td>Root (html) font-size, ихэвчлэн 16px</td><td>Фонт, зай ✓</td></tr>
+    <tr><td><code>vw</code> / <code>vh</code></td><td>Харьцангуй</td><td>Дэлгэцийн өргөн/өндрийн 1%</td><td>Бүтэн дэлгэцийн хэсэг</td></tr>
+  </table></div>
+
+  <h2 id="c1-6"><span class="num">06</span>Текст, фонт, дэвсгэр</h2>
+  <div class="ex" data-live><template><style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+  .hero{
+    font-family:'Roboto', Arial, sans-serif; /* нөөц фонттой */
+    font-size:1.25rem;
+    font-weight:700;
+    line-height:1.5;
+    text-align:center;
+    text-transform:uppercase;
+    letter-spacing:2px;
+    color:white;
+    background:linear-gradient(135deg,#0f7a5c,#2357c5);
+    padding:24px;
+    border-radius:12px;
+  }
+  .hero small{display:block;font-weight:400;text-transform:none;letter-spacing:0;opacity:.85}
+</style>
+<div class="hero">Аялал Монголд
+  <small>Говь, Хөвсгөл, Алтай</small>
+</div></template></div>
+  <ul>
+    <li><b>Google Fonts:</b> fonts.google.com → фонт сонгох → <code>&lt;link&gt;</code>-ийг head-д хуулах → CSS-д <code>font-family</code></li>
+    <li>Үргэлж нөөц фонт бич: <code>font-family: 'Roboto', Arial, sans-serif;</code></li>
+    <li><code>background</code>: <code>-color</code>, <code>-image: url(...)</code>, <code>-size: cover</code>, <code>-position: center</code>, градиент</li>
+  </ul>
+
+  <h2 id="c1-7"><span class="num">07</span>Box model</h2>
+  <p>Хуудсан дээрх элемент бүр нэг <b>хайрцаг</b>. Тэр нь дотроосоо гадагш 4 давхаргатай:</p>
+  <div class="ex" data-live><template><style>
+  .m{background:#fbf1d6;padding:18px;font:12px monospace;color:#7a5400}
+  .b{background:#333;padding:6px;color:#fff}
+  .p{background:#e1f2eb;padding:18px;color:#0f7a5c}
+  .c{background:#2357c5;color:#fff;padding:12px;text-align:center}
+</style>
+<div class="m">margin (гадна зай)
+  <div class="b">border (хүрээ)
+    <div class="p">padding (дотор зай)
+      <div class="c">content (агуулга)</div>
+    </div>
+  </div>
+</div></template></div>
+  <h3>Бодит хэмжээ ба box-sizing</h3>
+  <div class="ex"><div class="ex-bar">тооцоо</div><pre>.card { width: 300px; padding: 20px; border: 5px solid; }
+
+box-sizing: content-box (анхдагч)
+  бодит өргөн = 300 + 20×2 + 5×2 = 350px   ← гайхшруулна!
+
+box-sizing: border-box
+  бодит өргөн = 300px (padding, border дотор нь багтана) ✓</pre></div>
+  <div class="tip"><b>Зөвлөмж:</b> төсөл бүрийн эхэнд энэ reset-ийг бич:<br><code>*, *::before, *::after { box-sizing: border-box; margin: 0; }</code></div>
+  <h3>margin ба padding товчлол</h3>
+  <div class="tbl"><table>
+    <tr><th>Бичлэг</th><th>Утга</th></tr>
+    <tr><td><code>padding: 10px;</code></td><td>4 тал бүгд 10</td></tr>
+    <tr><td><code>padding: 10px 20px;</code></td><td>дээд/доод 10, зүүн/баруун 20</td></tr>
+    <tr><td><code>padding: 10px 20px 30px;</code></td><td>дээд 10, хажуу 20, доод 30</td></tr>
+    <tr><td><code>padding: 1px 2px 3px 4px;</code></td><td>дээд, баруун, доод, зүүн (цагийн зүүний дагуу)</td></tr>
+    <tr><td><code>margin: 0 auto;</code></td><td>Өргөнтэй block-ийг хэвтээ төвд</td></tr>
+  </table></div>
+
+  <h2 id="c1-8"><span class="num">08</span>display ба position</h2>
+  <div class="tbl"><table>
+    <tr><th>display</th><th>Үйлдэл</th></tr>
+    <tr><td><code>block</code></td><td>Бүтэн мөр, width/height ажиллана</td></tr>
+    <tr><td><code>inline</code></td><td>Текстийн урсгалд; width/height, дээд/доод margin ажиллахгүй</td></tr>
+    <tr><td><code>inline-block</code></td><td>Мөрөнд зэрэгцэнэ, гэхдээ width/height ажиллана (товч)</td></tr>
+    <tr><td><code>none</code></td><td>Бүрэн нуух, зай эзлэхгүй</td></tr>
+    <tr><td><code>flex</code> / <code>grid</code></td><td>Layout: дараагийн хичээлд</td></tr>
+  </table></div>
+  <div class="tbl"><table>
+    <tr><th>position</th><th>Юунаас хамаарч байрлах</th><th>Жишээ</th></tr>
+    <tr><td><code>static</code></td><td>Анхдагч урсгал</td><td>Ердийн элемент</td></tr>
+    <tr><td><code>relative</code></td><td>Өөрийн анхны байрлалаас; absolute хүүхдийн "зангуу"</td><td>Картын эцэг</td></tr>
+    <tr><td><code>absolute</code></td><td>Хамгийн ойрын position-тэй эцгээс; урсгалаас гарна</td><td>Картын булан дахь "SALE" шошго</td></tr>
+    <tr><td><code>fixed</code></td><td>Дэлгэцээс; scroll хийхэд хөдлөхгүй</td><td>Чатын товч</td></tr>
+    <tr><td><code>sticky</code></td><td>Scroll хүрэхэд наалдана</td><td>Цэс</td></tr>
+  </table></div>
+  <div class="ex" data-live><template><style>
+  *{box-sizing:border-box}
+  .card{position:relative;width:220px;padding:20px;border:2px solid #0f7a5c;border-radius:12px;font-family:sans-serif;margin:10px auto}
+  .tag{position:absolute;top:-10px;right:-10px;background:tomato;color:#fff;font-size:12px;padding:4px 8px;border-radius:99px}
+  .price{font-size:2rem;font-weight:700;margin:8px 0}
+  .btn{display:inline-block;padding:8px 16px;background:#0f7a5c;color:#fff;border-radius:6px;text-decoration:none}
+</style>
+<div class="card">
+  <span class="tag">-20%</span>
+  <h3 style="margin:0">Pro багц</h3>
+  <p class="price">₮39,000</p>
+  <a class="btn" href="#">Авах</a>
+</div></template></div>
+
+  <h2 id="c1-9"><span class="num">09</span>Лаборатори</h2>
+  <div class="lab"><div class="lab-h"><b>Лаб 1 · Нэрийн хуудасны типографи</b><span>эхлэл код: 01-neriin-huudas · ~30 мин</span></div><div class="lab-b"><ol>
+    <li>Өгсөн HTML-ийн <code>head</code>-ийг бөглөөд <code>style.css</code>-ээ <code>&lt;link&gt;</code>-ээр холбо</li>
+    <li><code>body</code>-д нөөцтэй <code>font-family</code>, <code>line-height</code>, өнгө</li>
+    <li>Өнгийг дор хаяж 3 өөр аргаар (нэр, hex, rgb/hsl) тодорхойл</li>
+    <li>Холбоосын <code>:hover</code>, <code>:visited</code> төлөвүүдийг загварчил</li>
+  </ol></div></div>
+  <div class="lab"><div class="lab-h"><b>Лаб 2 · Клубийн хуудас</b><span>эхлэл код: 02-klub · HTML-д class, id нэмэхгүй · ~35 мин</span></div><div class="lab-b"><ol>
+    <li>HTML-д юу ч нэмэлгүй, зөвхөн CSS-ээр загварчил</li>
+    <li>Дүрэм бүрийн дээр <code>/* сонгогчийн төрөл: ... */</code> тайлбар бич</li>
+    <li>Тэг, class, бүлэг, descendant, child, adjacent, pseudo-class сонгогч бүрийг ашигла</li>
+    <li>Зөрчилтэй хоёр дүрмийн specificity-г тайлбарт тооцож бич</li>
+  </ol></div></div>
+  <div class="lab"><div class="lab-h"><b>Лаб 3 · Box model: үнийн карт</b><span>эхлэл код: 03-uniin-kart · ~30 мин</span></div><div class="lab-b"><ol>
+    <li>Эхэнд reset: <code>box-sizing: border-box</code></li>
+    <li>Content, padding, border, margin-ийг тус тусад нь харагдахуйц өнгөөр</li>
+    <li><code>content-box</code> ба <code>border-box</code> картын бодит өргөнийг тайлбарт тооцож харуул</li>
+    <li>Онцлох картад <code>position: absolute</code> шошго</li>
+  </ol></div></div>
+
+  <h2 id="c1-10"><span class="num">✓</span>Өөрийгөө шалга</h2>
+  <div class="quiz" data-quiz="css1"></div>
+</article>
+
+<!-- ===================== LESSON: CSS 2 ===================== -->
+<article class="lesson" data-lesson="css2" hidden>
+  <div class="l-eyebrow">Хичээл 5 · 2-р долоо хоног · Лекц + лаб</div>
+  <h1>Flexbox, Grid, Responsive</h1>
+  <p class="lead">Элементүүдийг мөр, баганаар байрлуулах орчин үеийн хоёр арга, мөн утас, таблет, компьютер дээр зөв харагдах дизайн.</p>
+  <div class="meta-row">
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/746/mod_resource/content/1/CSS%20Lecture%202.pdf" target="_blank" rel="noopener">Эх PDF ↗</a>
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/748/mod_resource/content/1/CSS%20Lecture%202%20examples.zip" target="_blank" rel="noopener">Лабын жишээ ZIP ↗</a>
+    <a class="pill" href="https://flexboxfroggy.com/" target="_blank" rel="noopener">Flexbox Froggy ↗</a>
+    <a class="pill" href="https://cssgridgarden.com/" target="_blank" rel="noopener">Grid Garden ↗</a>
+  </div>
+  <div class="goals"><h3>Энэ хичээлийн дараа</h3><ul>
+    <li>Flexbox-оор цэс, карт, төвлөрсөн хэсэг хийнэ</li>
+    <li>Grid-ээр хуудасны layout ба өөрөө зохицох сүлжээ хийнэ</li>
+    <li>Media query бичиж, DevTools-оор утасны харагдацыг шалгана</li>
+  </ul></div>
+
+  <h2 id="c2-0"><span class="num">00</span>Давтлага</h2>
+  <ul>
+    <li><code>.card p</code> ба <code>#main p</code>-ийн аль нь ялах вэ? Яагаад?</li>
+    <li>width 200px, padding 10px, border 2px, content-box үед бодит өргөн хэд вэ? (224px)</li>
+    <li><code>position: absolute</code> юунаас хамаарч байрладаг вэ?</li>
+  </ul>
+
+  <h2 id="c2-1"><span class="num">01</span>Flexbox: нэг чиглэлийн layout</h2>
+  <p>Эцэг элементэд <code>display: flex</code> өгөхөд түүний <b>шууд хүүхдүүд</b> нэг мөрөнд (эсвэл баганад) зэрэгцэнэ. Үндсэн тэнхлэг (main axis) нь <code>flex-direction</code>-оор, хөндлөн тэнхлэг (cross axis) нь түүнд перпендикуляр.</p>
+  <div class="tbl"><table>
+    <tr><th>Container шинж</th><th>Утгууд</th><th>Үйлдэл</th></tr>
+    <tr><td><code>flex-direction</code></td><td>row · column</td><td>Үндсэн тэнхлэгийн чиглэл</td></tr>
+    <tr><td><code>justify-content</code></td><td>flex-start · center · space-between · space-around · space-evenly</td><td>Үндсэн тэнхлэгийн дагуу зэрэгцүүлэх</td></tr>
+    <tr><td><code>align-items</code></td><td>stretch · center · flex-start · flex-end</td><td>Хөндлөн тэнхлэгийн дагуу</td></tr>
+    <tr><td><code>flex-wrap</code></td><td>nowrap · wrap</td><td>Багтахгүй бол дараагийн мөрөнд</td></tr>
+    <tr><td><code>gap</code></td><td>16px</td><td>Хүүхдүүдийн хоорондын зай</td></tr>
+  </table></div>
+  <div class="ex" data-live data-controls="justify"><template><style>
+  .row{display:flex;justify-content:space-between;align-items:center;gap:8px;background:#e6edfb;padding:10px;border-radius:8px;font-family:sans-serif}
+  .row div{background:#2357c5;color:#fff;padding:10px 14px;border-radius:6px}
+  .row div:nth-child(2){padding:22px 14px}
+</style>
+<div class="row">
+  <div>1</div><div>2</div><div>3</div>
+</div></template></div>
+  <h3>Flex item: flex ба төвд байрлуулах</h3>
+  <p><code>flex: 1</code> нь үлдсэн зайг тэнцүү хуваана. <code>flex: 2</code> бол хоёр дахин их авна. <code>flex: 0 0 200px</code> = томрохгүй, жижгэрэхгүй, 200px.</p>
+  <div class="ex" data-live><template><style>
+  .box{display:flex;justify-content:center;align-items:center;height:120px;background:#e1f2eb;border-radius:8px;font-family:sans-serif}
+  .box span{background:#0f7a5c;color:#fff;padding:10px 16px;border-radius:6px}
+</style>
+<!-- 3 мөрөөр яг төвд ✓ -->
+<div class="box"><span>Би яг төвд</span></div></template></div>
+  <div class="ex" data-live><template><style>
+  nav{display:flex;align-items:center;gap:16px;padding:10px 16px;background:#15211d;border-radius:8px;font-family:sans-serif}
+  nav .logo{color:#4fd1a5;font-weight:700;margin-right:auto} /* бусдыг баруун тийш түлхэнэ */
+  nav a{color:#fff;text-decoration:none;font-size:14px}
+</style>
+<nav>
+  <span class="logo">TRAVEL.mn</span>
+  <a href="#">Нүүр</a><a href="#">Аялал</a><a href="#">Холбоо</a>
+</nav></template></div>
+
+  <h2 id="c2-2"><span class="num">02</span>CSS Grid: хоёр чиглэлийн layout</h2>
+  <p>Grid нь мөр <b>ба</b> баганыг зэрэг удирдана. <code>fr</code> нэгж = үлдсэн зайн хэсэг.</p>
+  <div class="ex" data-live><template><style>
+  .grid{display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;font-family:sans-serif}
+  .grid div{background:#6a4bb8;color:#fff;padding:14px;border-radius:6px;text-align:center}
+  .wide{grid-column:span 2}
+</style>
+<div class="grid">
+  <div>1fr</div><div>2fr</div><div>1fr</div>
+  <div class="wide">span 2</div><div>1</div>
+</div></template></div>
+  <h3>grid-template-areas: хуудасны layout</h3>
+  <div class="ex" data-live><template><style>
+  .page{display:grid;grid-template-columns:140px 1fr;grid-template-rows:auto 120px auto;
+        grid-template-areas:"head head" "side main" "foot foot";gap:6px;font:13px sans-serif}
+  .page>*{padding:10px;border-radius:6px;color:#fff}
+  header{grid-area:head;background:#2357c5}
+  aside{grid-area:side;background:#c2501d}
+  main{grid-area:main;background:#0f7a5c}
+  footer{grid-area:foot;background:#555}
+</style>
+<div class="page">
+  <header>header</header><aside>aside</aside>
+  <main>main</main><footer>footer</footer>
+</div></template></div>
+  <h3>Media query-гүй өөрөө зохицох сүлжээ</h3>
+  <div class="ex" data-live><template><style>
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:8px}
+  .gallery div{aspect-ratio:1;background:linear-gradient(135deg,#0f7a5c,#4fd1a5);border-radius:8px;display:grid;place-items:center;color:#fff;font:600 18px sans-serif}
+</style>
+<!-- Цонхыг нарийсгахад багана 4→3→2→1 -->
+<div class="gallery">
+  <div>1</div><div>2</div><div>3</div><div>4</div>
+  <div>5</div><div>6</div><div>7</div><div>8</div>
+</div></template></div>
+  <div class="tbl"><table>
+    <tr><th>Flexbox</th><th>Grid</th></tr>
+    <tr><td>1 хэмжээс: мөр <i>эсвэл</i> багана</td><td>2 хэмжээс: мөр <i>ба</i> багана</td></tr>
+    <tr><td>Агуулгаас эхэлнэ (content-first)</td><td>Layout-аас эхэлнэ (layout-first)</td></tr>
+    <tr><td>Цэс, товчны мөр, карт доторх зэрэгцүүлэлт</td><td>Хуудасны бүтэц, зургийн цомог, dashboard</td></tr>
+  </table></div>
+  <p>Ихэнх үед хоёуланг хамт: хуудсыг Grid-ээр, доторх жижиг хэсгийг Flexbox-оор.</p>
+
+  <h2 id="c2-3"><span class="num">03</span>Responsive дизайн</h2>
+  <p>Нэг хуудас утас, таблет, компьютер бүгд дээр зөв харагдах ёстой.</p>
+  <div class="tbl"><table>
+    <tr><th>Төхөөрөмж</th><th>Өргөн</th><th>Ихэвчлэн</th></tr>
+    <tr><td>Утас</td><td>&lt; 768px</td><td>1 багана</td></tr>
+    <tr><td>Таблет</td><td>768–1023px</td><td>2 багана</td></tr>
+    <tr><td>Компьютер</td><td>≥ 1024px</td><td>3–4 багана</td></tr>
+  </table></div>
+  <div class="ex"><div class="ex-bar">responsive.css · mobile-first</div><pre>/* 1. Утас: анхдагч */
+.cards { display: grid; grid-template-columns: 1fr; gap: 16px; }
+
+/* 2. Таблет */
+@media (min-width: 768px) {
+  .cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* 3. Компьютер */
+@media (min-width: 1024px) {
+  .cards { grid-template-columns: repeat(4, 1fr); }
+}</pre></div>
+  <h3>Шилдэг зөвлөмж</h3>
+  <ul>
+    <li>Head-д заавал: <code>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</code></li>
+    <li>Уян зураг: <code>img { max-width: 100%; height: auto; }</code></li>
+    <li>Тогтмол <code>width: 1200px</code>-ийн оронд <code>max-width: 1200px; margin: 0 auto;</code></li>
+    <li>Фонт, зайд <code>rem</code>; <code>clamp(1.5rem, 4vw, 3rem)</code> гарчгийг уян болгоно</li>
+    <li>Mobile-first: жижиг дэлгэцээс эхэлж, <code>min-width</code>-ээр томруулна</li>
+  </ul>
+
+  <h2 id="c2-4"><span class="num">04</span>DevTools ба сайн дадал</h2>
+  <ul>
+    <li><kbd>F12</kbd> эсвэл <kbd>Ctrl/Cmd + Shift + I</kbd>. Elements таб: элемент сонгоод CSS-ийг шууд засаж турш</li>
+    <li>Toggle device toolbar (<kbd>Ctrl/Cmd + Shift + M</kbd>): утас, таблетын харагдац</li>
+    <li>Computed таб: box model-ийн бодит хэмжээ; Flex/Grid badge дээр дарвал шугам харуулна</li>
+  </ul>
+  <h3>Сайн код бичих дадал</h3>
+  <ol>
+    <li>Жигд догол мөр (2 эсвэл 4 зай)</li>
+    <li>Утгатай class нэр: <code>.price-card</code>, <code>.red-box</code> биш</li>
+    <li>Давтагдсан утгыг CSS хувьсагчаар: <code>:root { --brand: #0f7a5c; }</code></li>
+    <li>CSS-ээ хэсэгчлэн тайлбартай: <code>/* ===== Header ===== */</code></li>
+    <li>Inline style, <code>!important</code>-аас зайлсхий</li>
+  </ol>
+  <h3>Тоглоомоор дадлага</h3>
+  <p><a href="https://flexboxfroggy.com/" target="_blank" rel="noopener">Flexbox Froggy</a> (24 түвшин) ба <a href="https://cssgridgarden.com/" target="_blank" rel="noopener">Grid Garden</a> (28 түвшин). Найдвартай лавлах: <a href="https://developer.mozilla.org/" target="_blank" rel="noopener">MDN</a>, <a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/" target="_blank" rel="noopener">CSS-Tricks Flexbox guide</a>, <a href="https://www.w3schools.com/css/" target="_blank" rel="noopener">W3Schools</a>.</p>
+  <h3>Цаашдын зам</h3>
+  <div class="flow"><span>HTML + CSS ✓</span><i>→</i><span>Git, GitHub</span><i>→</i><span>JavaScript</span><i>→</i><span>Tailwind / Bootstrap</span><i>→</i><span>React</span><i>→</i><span>Backend</span></div>
+
+  <h2 id="c2-5"><span class="num">05</span>Лаборатори ба гэрийн даалгавар</h2>
+  <div class="lab"><div class="lab-h"><b>Лаб 4 · Flexbox: аялалын нүүр хуудас</b><span>04-ayalal · index, gobi, hovsgol</span></div><div class="lab-b"><ol>
+    <li>Flexbox-оор навигаци: лого зүүн талд, цэс баруун талд</li>
+    <li>Hero хэсэг: гарчиг, текст, товчийг яг төвд</li>
+    <li>Аяллын картууд <code>flex-wrap: wrap</code>-тай, уян өргөнтэй</li>
+    <li>Flex footer; Говь, Хөвсгөл дэд хуудаснууд руу холбоос</li>
+  </ol><p class="note">Шалгах: цонхыг 1200px-ээс 400px хүртэл нарийсгахад карт хэтэрч гарах ёсгүй.</p></div></div>
+  <div class="lab"><div class="lab-h"><b>Лаб 5 · CSS Grid: зургийн цомог</b><span>05-tsomog</span></div><div class="lab-b"><ol>
+    <li>Хуудасны layout-ийг <code>grid-template-areas</code>-аар</li>
+    <li>Цомгийг <code>repeat(auto-fit, minmax(...))</code>-ээр</li>
+    <li>Нэг ч media query бичихгүй: багана 4→3→2→1 автоматаар өөрчлөгдөх ёстой</li>
+  </ol></div></div>
+  <div class="lab"><div class="lab-h"><b>Гэрийн даалгавар · YouTube нүүр хуудсыг хуулбарлах</b><span>мэргэжлийн дадал</span></div><div class="lab-b">
+    <p>Дизайнераас ирсэн зургийг код болгох нь frontend хөгжүүлэгчийн өдөр тутмын ажил. YouTube-ийн нүүр хуудсыг (header + хайлт, зүүн цэс, видео картын grid) HTML/CSS-ээр дуурайж хий. Header-ийг Flexbox-оор, видеоны сүлжээг Grid-ээр.</p>
+    <a class="btn ghost" href="https://www.youtube.com/watch?v=fdKILPQq74I" target="_blank" rel="noopener">Зааврын видео ↗</a>
+  </div></div>
+
+  <h2 id="c2-6"><span class="num">✓</span>Өөрийгөө шалга</h2>
+  <div class="quiz" data-quiz="css2"></div>
+</article>
+
+<!-- ===================== LESSON: FRAMEWORKS + JS ===================== -->
+<article class="lesson" data-lesson="js" hidden>
+  <div class="l-eyebrow">Видео хичээл 8–13 · Тэмдэглэл</div>
+  <h1>CSS framework ба JavaScript эхлэл</h1>
+  <p class="lead">Bootstrap, TailwindCSS, v0.app-аар хурдан загвар хийх, дараа нь JavaScript-ийн хувьсагч, event, өгөгдлийн төрөл, функц. Видеог үзэхийн өмнө эсвэл дараа нь энэ тэмдэглэлийг уншаарай.</p>
+  <div class="meta-row">
+    <a class="pill" href="https://www.youtube.com/watch?v=JT4euSSS6_k" target="_blank" rel="noopener">Видео 8: Bootstrap ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=BCk1s-4KNEU" target="_blank" rel="noopener">Видео 9: v0.app ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=xLUOHYE3Egk" target="_blank" rel="noopener">Видео 10: 10 минутад сайт ↗</a>
+    <a class="pill" href="https://youtu.be/zDbel1M88pY" target="_blank" rel="noopener">Видео 11: Tailwind ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=pfKJKd6z1KU" target="_blank" rel="noopener">Видео 12: JS event ↗</a>
+    <a class="pill" href="https://www.youtube.com/watch?v=H3qVEQhnoRs" target="_blank" rel="noopener">Видео 13: JS төрөл, функц ↗</a>
+    <a class="pill" href="https://fullstack.mn/pluginfile.php/318/mod_resource/content/1/javascript_ebook.zip" target="_blank" rel="noopener">JavaScript ном ZIP ↗</a>
+  </div>
+
+  <h2 id="js-1"><span class="num">01</span>Bootstrap</h2>
+  <p>Бэлэн class-тай CSS framework. Өөрөө CSS бичихгүйгээр товч, карт, цэс, 12 баганат grid ашиглана. Хурдан ч бүх Bootstrap сайт бие биетэйгээ төстэй харагдах хандлагатай.</p>
+  <div class="ex"><div class="ex-bar">Bootstrap</div><pre>&lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+
+&lt;div class="container"&gt;
+  &lt;div class="row"&gt;
+    &lt;div class="col-md-6"&gt;Зүүн хагас&lt;/div&gt;
+    &lt;div class="col-md-6"&gt;Баруун хагас&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;button class="btn btn-primary"&gt;Бүртгүүлэх&lt;/button&gt;
+&lt;/div&gt;</pre></div>
+
+  <h2 id="js-2"><span class="num">02</span>TailwindCSS</h2>
+  <p><b>Utility-first</b>: жижиг, нэг үүрэгтэй class-уудыг HTML дээр шууд нийлүүлнэ. Дизайныг бүрэн өөрийнхөөрөө хийх боломжтой тул React/Next.js төсөлд хамгийн их хэрэглэгддэг.</p>
+  <div class="tbl"><table>
+    <tr><th>Tailwind class</th><th>Энгийн CSS</th></tr>
+    <tr><td><code>p-4</code></td><td><code>padding: 1rem</code></td></tr>
+    <tr><td><code>mt-2</code></td><td><code>margin-top: .5rem</code></td></tr>
+    <tr><td><code>flex items-center justify-between</code></td><td><code>display:flex; align-items:center; justify-content:space-between</code></td></tr>
+    <tr><td><code>text-xl font-bold text-gray-800</code></td><td>фонтын хэмжээ, жин, өнгө</td></tr>
+    <tr><td><code>rounded-lg shadow</code></td><td><code>border-radius</code>, <code>box-shadow</code></td></tr>
+    <tr><td><code>hover:bg-blue-600</code></td><td><code>:hover { background: ... }</code></td></tr>
+    <tr><td><code>md:grid-cols-3</code></td><td><code>@media (min-width:768px) { grid-template-columns: repeat(3,1fr) }</code></td></tr>
+  </table></div>
+  <div class="ex"><div class="ex-bar">Tailwind карт</div><pre>&lt;script src="https://cdn.tailwindcss.com"&gt;&lt;/script&gt;
+
+&lt;div class="max-w-sm mx-auto p-6 bg-white rounded-xl shadow flex items-center gap-4"&gt;
+  &lt;img class="w-12 h-12 rounded-full" src="avatar.png" alt="Урсаа"&gt;
+  &lt;div&gt;
+    &lt;h3 class="text-lg font-semibold"&gt;Урсаа&lt;/h3&gt;
+    &lt;p class="text-gray-500"&gt;Frontend хөгжүүлэгч&lt;/p&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre></div>
+
+  <h2 id="js-3"><span class="num">03</span>v0.app: AI-аар загвар бүтээх</h2>
+  <p>v0.app нь текст тайлбараас React + Tailwind код үүсгэдэг AI хэрэгсэл. "Кофе шопын танилцуулга сайт, цэс, байршилтай" гэх мэт бичихэд бэлэн загвар гаргана; дараа нь Vercel-д нэг товчоор байршуулна.</p>
+  <ol>
+    <li>Тодорхой prompt бич: хэнд, ямар хэсгүүд, ямар өнгө, ямар мэдрэмж</li>
+    <li>Гарсан загварыг жижиг алхмаар засуул ("hero-г бараан өнгөтэй болго")</li>
+    <li>Кодыг нь уншиж ойлго: AI-ын кодыг сохроор бүү хуул</li>
+    <li>Байршуулахад үнэгүй Vercel + домэйн (жилд ойролцоогоор 0–3$-ын хямд сонголт ч бий)</li>
+  </ol>
+  <div class="tip"><b>Анхаар:</b> AI хэрэгсэл хурдасгадаг ч HTML, CSS, JS-ийн суурь мэдлэггүй бол алдааг нь засаж чадахгүй. Эхлээд суурь, дараа нь AI.</div>
+
+  <h2 id="js-4"><span class="num">04</span>JavaScript: хувьсагч ба event</h2>
+  <div class="tbl"><table>
+    <tr><th>Түлхүүр үг</th><th>Дахин утга оноох</th><th>Хэзээ</th></tr>
+    <tr><td><code>const</code></td><td>Үгүй</td><td>Анхдагч сонголт ✓</td></tr>
+    <tr><td><code>let</code></td><td>Тийм</td><td>Утга өөрчлөгдөх үед (тоолуур)</td></tr>
+    <tr><td><code>var</code></td><td>Тийм</td><td>Хуучин; бүү хэрэглэ</td></tr>
+  </table></div>
+  <div class="ex" data-live data-js><template><style>
+  .c{font-family:sans-serif;display:flex;align-items:center;gap:12px}
+  .c button{font-size:18px;width:40px;height:40px;border-radius:8px;border:1px solid #999;cursor:pointer;background:#fff}
+  .c output{font-size:28px;font-weight:700;min-width:40px;text-align:center}
+</style>
+<div class="c">
+  <button id="minus">−</button>
+  <output id="count">0</output>
+  <button id="plus">+</button>
+</div>
+<script>
+  let count = 0;                                   // өөрчлөгдөх тул let
+  const out = root.querySelector('#count');        // элемент сонгох
+  root.querySelector('#plus').addEventListener('click', () => {
+    count++;
+    out.textContent = count;
+  });
+  root.querySelector('#minus').addEventListener('click', () => {
+    count--;
+    out.textContent = count;
+  });
+</script></template></div>
+  <p class="note">Жинхэнэ хуудсанд <code>root</code>-ын оронд <code>document</code> гэж бичнэ: <code>document.querySelector('#plus')</code>.</p>
+
+  <h2 id="js-5"><span class="num">05</span>Өгөгдлийн төрөл, if, array, object</h2>
+  <div class="ex"><div class="ex-bar">main.js</div><pre>// Анхдагч төрлүүд
+const name = "Урсаа";        // string
+const age = 24;              // number
+const isStudent = true;      // boolean
+let job;                     // undefined
+const car = null;            // null
+
+// Нөхцөл
+if (age >= 18) {
+  console.log("Насанд хүрсэн");
+} else {
+  console.log("Хүүхэд");
+}
+
+// Массив: эрэмбэтэй жагсаалт
+const skills = ["HTML", "CSS", "JS"];
+skills.push("React");
+console.log(skills[0], skills.length);   // "HTML" 4
+
+// Объект: түлхүүр-утга
+const user = { name: "Урсаа", city: "Улаанбаатар", skills };
+console.log(user.name, user["city"]);</pre></div>
+
+  <h2 id="js-6"><span class="num">06</span>Функц ба arrow function</h2>
+  <div class="ex" data-live data-js><template><style>pre{font:14px monospace;background:#f0f3f2;padding:10px;border-radius:6px;margin:0}</style>
+<pre id="log"></pre>
+<script>
+  const log = (...a) => root.querySelector('#log').textContent += a.join(' ') + '\n';
+
+  // Энгийн функц
+  function greet(name) {
+    return "Сайн уу, " + name + "!";
+  }
+
+  // Arrow function: богино бичлэг
+  const square = (x) => x * x;
+  const add = (a, b) => a + b;
+
+  log(greet("Урсаа"));
+  log("5² =", square(5));
+  log("2 + 3 =", add(2, 3));
+
+  // Массивын арга + arrow function
+  const prices = [12000, 8000, 25000];
+  log("Хямдралтай:", prices.map(p => p * 0.8).join(', '));
+  log("20000-аас бага:", prices.filter(p => p < 20000).join(', '));
+</script></template></div>
+
+  <h2 id="js-7"><span class="num">07</span>JavaScript ном</h2>
+  <p>Курсийн ZIP файлд 3 боть ном PDF ба EPUB хэлбэрээр бий: хэлний үндэс (<code>js</code>), хөтөч ба DOM/UI (<code>ui</code>), нэмэлт сэдэв (<code>more</code>). Утсан дээр EPUB-ыг Apple Books эсвэл Google Play Books-оор уншихад тохиромжтой.</p>
+</article>
+
+<!-- ===================== LESSON: PRACTICE ===================== -->
+<article class="lesson" data-lesson="practice" hidden>
+  <div class="l-eyebrow">Дасгал ажил</div>
+  <h1>Дасгал: Instagram ба Spotify хуулбарлах</h1>
+  <p class="lead">Бодит сайтын загварыг HTML/CSS-ээр дахин бүтээх нь сурсан бүхнээ нэгтгэх хамгийн сайн арга.</p>
+
+  <h2 id="pr-1"><span class="num">01</span>Дасгал 1 · Instagram profile (код дагаж бичих)</h2>
+  <p>Видеог дагаж Instagram-ын profile хуудсыг бичнэ. Видеог зогсоож, өөрөө эхэлж бичээд, дараа нь харьцуул.</p>
+  <div class="actions"><a class="btn" href="https://www.youtube.com/watch?v=4CgeSqvdW2s" target="_blank" rel="noopener">Видео үзэх ↗</a><a class="btn ghost" href="https://fullstack.mn/pluginfile.php/291/mod_resource/content/1/instagram.zip" target="_blank" rel="noopener">Бэлэн шийдэл ZIP ↗</a></div>
+  <h3>Бүтцийн төлөвлөгөө</h3>
+  <div class="ex" data-live><template><style>
+  *{box-sizing:border-box}
+  .ig{font-family:-apple-system,sans-serif;max-width:520px;margin:auto;color:#262626}
+  .top{display:flex;align-items:center;gap:28px;padding:16px 0;border-bottom:1px solid #ddd}
+  .ava{width:86px;height:86px;border-radius:50%;background:conic-gradient(#f58529,#dd2a7b,#8134af,#f58529);padding:3px;flex:none}
+  .ava i{display:block;width:100%;height:100%;border-radius:50%;background:#eee;border:3px solid #fff}
+  .name{display:flex;align-items:center;gap:10px;font-size:18px}
+  .name button{font:600 13px sans-serif;padding:5px 14px;border:0;border-radius:6px;background:#0095f6;color:#fff}
+  .stats{display:flex;gap:18px;font-size:14px;margin:10px 0 4px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:3px;margin-top:4px}
+  .grid div{aspect-ratio:1;background:#d9e4e0}
+  .grid div:nth-child(3n+2){background:#c9d6f0}
+</style>
+<div class="ig">
+  <header class="top">
+    <div class="ava"><i></i></div>
+    <div>
+      <div class="name"><b>ursa.dev</b> <button>Follow</button></div>
+      <div class="stats"><span><b>24</b> posts</span><span><b>1.2k</b> followers</span><span><b>180</b> following</span></div>
+      <small>Frontend developer · Ulaanbaatar</small>
+    </div>
+  </header>
+  <main class="grid">
+    <div></div><div></div><div></div><div></div><div></div><div></div>
+  </main>
+</div></template></div>
+  <ul>
+    <li>Header: Flexbox (avatar + мэдээлэл), avatar-т <code>border-radius: 50%</code></li>
+    <li>Тоон мэдээлэл: Flexbox + <code>gap</code></li>
+    <li>Постын сүлжээ: Grid, 3 багана, <code>aspect-ratio: 1</code></li>
+  </ul>
+
+  <h2 id="pr-2"><span class="num">02</span>Дасгал 2 · Spotify</h2>
+  <p>Spotify-ийн дэлгэцийн зургийг харж, ижил загварыг өөрөө бүтээ. Код өгөхгүй: дизайныг код болгох чадвараа шалгана.</p>
+  <div class="actions"><a class="btn" href="https://fullstack.mn/pluginfile.php/292/mod_resource/content/3/Screenshot%202025-01-28%20at%2016.23.54.png" target="_blank" rel="noopener">Загвар зургийг нээх ↗</a></div>
+  <h3>Алхам</h3>
+  <ol>
+    <li>Зургийг хэсэгт хуваа: зүүн цэс, дээд bar, гол агуулга (playlist картууд), доод тоглуулагч</li>
+    <li>Хуудасны layout-ийг Grid-ээр: <code>grid-template-areas: "side main" "player player"</code></li>
+    <li>Картын сүлжээг <code>repeat(auto-fill, minmax(160px, 1fr))</code></li>
+    <li>Бараан өнгө: дэвсгэр <code>#121212</code>, карт <code>#181818</code>, hover <code>#282828</code>, ногоон товч</li>
+    <li>Доод тоглуулагч: <code>position: fixed; bottom: 0</code>, доторх товчнууд Flexbox</li>
+    <li>DevTools-оор утасны өргөнд шалга</li>
+  </ol>
+</article>
+
+<!-- ===================== LESSON: QUIZ ===================== -->
+<article class="lesson" data-lesson="quiz" hidden>
+  <div class="l-eyebrow">Давтлага</div>
+  <h1>Их давтлага: 6 раунд</h1>
+  <p class="lead">Курсийн QUIZ PPT-ийн сэдвүүдээр бэлдсэн асуултууд: вэб хөгжүүлэлт, хөгжүүлэлтийн шат, түүх, протокол, домэйн ба DNS, сервер ба хостинг. Хариулт дээр дармагц зөв эсэх нь гарна.</p>
+  <div class="meta-row"><a class="pill" href="https://fullstack.mn/pluginfile.php/727/mod_resource/content/2/Introduction%20to%20Web%20design%20QUIZ.pptx" target="_blank" rel="noopener">Эх QUIZ PPT ↗</a></div>
+  <div class="quiz" data-quiz="big"></div>
+</article>
+
+  </div><!-- /#lessons -->
+</div><!-- /reader -->
+
+<div id="view-map" class="wrap" hidden>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Хайх: flexbox, form, DNS, Tailwind…" aria-label="Хайх">
+    <div id="filters" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+  </div>
+  <main id="main" class="mapmain"></main>
+</div>
+
+<footer><div class="wrap">Хичээлийн тэмдэглэл, жишээ код нь FullStack.mn-ийн курсийн сэдвүүдийг дагаж бичигдсэн. Эх слайд, бүрэн лабын файлыг "Эх PDF ↗" товчоор нээнэ (нэвтэрсэн байх хэрэгтэй).</div></footer>
+<script>
+const F='https://fullstack.mn/pluginfile.php/';
+const M=(t,id)=>`https://fullstack.mn/mod/${t}/view.php?id=${id}`;
+const YT=v=>`https://www.youtube.com/watch?v=${v}`;
+const TYPES={
+  lec:{label:'Лекц PDF',cls:'t-lec',c:'--c-lec'},
+  ppt:{label:'PPT',cls:'t-ppt',c:'--c-ppt'},
+  vid:{label:'Видео',cls:'t-vid',c:'--c-vid'},
+  code:{label:'Жишээ код',cls:'t-code',c:'--c-code'},
+  task:{label:'Дасгал',cls:'t-task',c:'--c-task'},
+  ref:{label:'Ном / Лавлах',cls:'t-ref',c:'--c-ref'}
+};
+
+const STOPS=[
+{id:'s1',title:'Вэб хөгжүүлэлтийн суурь ойлголт',sub:'Frontend, backend, протокол, DNS, хостинг, deployment',items:[
+ {id:'329',type:'lec',title:'Вэб хөгжүүлэлтийн үндэс: Frontend VS Backend',meta:'PDF · 17 хуудас · Б.Сод-Од',
+  notes:[['Агуулга',['Frontend (клиент тал) гэж юу вэ: хэрэглэгчийн хөтөч дээр харагдах цэс, слайдер, товч гэх мэт','Backend (сервер тал): "мөсөн уулын" харагдахгүй доод хэсэг, өгөгдлийг боловсруулж frontend рүү дамжуулна','Ур чадварын зураглал: frontend → HTML, CSS, JavaScript + тухайн үеийн framework; backend → PHP, Ruby, Python, Java, .NET-ээс 1–2, мөн MySQL, Oracle, SQL Server, MongoDB','Fullstack хөгжүүлэгч: хоёр талыг хоёуланг нь хариуцна','Атом дизайн (atomic design) зарчим','Төслийн файлын бүтцийг хэрхэн зохион байгуулах']]],
+  links:[['PDF нээх',F+'532/mod_resource/content/1/Introduction%20To%20Web%20Development.pdf']]},
+ {id:'389',type:'ppt',title:'Introduction to Web Design (Вэб хөгжүүлэлтийн суурь)',meta:'PPTX · 54 слайд · 8 бүлэг',
+  notes:[['8 бүлэг',['01 Вэб хөгжүүлэлт гэж юу вэ: frontend/backend/full-stack, технологийн давхарга (stack), статик ба динамик сайт, өдөр тутмын хэрэгсэл','02 Хөгжүүлэлтийн шат: вэб төслийн 7 шат, шат бүрийн оролт/гаралт, Waterfall ба Agile, жишээ нь кофе шопын сайт','03 Вэбийн түүх: 1969 ARPANET → 1990-ээд Netscape, W3C → 2005 оноос AJAX, орчин үеийн вэб; Web 1.0 / 2.0 / 3.0','04 Протокол: TCP/IP давхарга, IP хаяг ба порт, TCP vs UDP, HTTP хүсэлт/хариу, HTTP method-ууд, статус код (1xx–5xx), HTTPS ба TLS, URL-ийн бүтэц','05 Домэйн ба DNS: DNS хэрхэн ажилладаг, бичлэгийн төрөл (A, CNAME, MX…), домэйн бүртгүүлэх алхам','06 Сервер, хостинг, VPS: хостингийн төрлүүдийг харьцуулах, VPS гэж юу вэ, аль хостингийг сонгох','07 Байршуулалт: GitHub Pages, Vercel/Netlify, VPS дээр Nginx-ээр гараар; домэйн холбох, HTTPS, CI/CD','08 Нэгтгэл: "Хаягаа бичээд Enter дарахад юу болдог вэ" бүх алхмаар, нэр томъёоны толь, дасгал']]],
+  links:[['PPTX татах',F+'726/mod_resource/content/2/Introduction%20to%20Web%20Design.pptx']]},
+ {id:'390',type:'ppt',title:'Introduction to Web Design: QUIZ',meta:'PPTX · 66 слайд · асуулт-хариултын тоглоом',
+  notes:[['Бүтэц',['Дээрх лекцийг давтах асуулт-хариултын тоглоом, оноо тоолно','Раунд 1 Вэб хөгжүүлэлт · Раунд 2 Хөгжүүлэлтийн шат · Раунд 3 Вэбийн түүх','Раунд 4 Протокол · Раунд 5 Домэйн ба DNS · Раунд 6 Сервер, хостинг','Төгсгөлд нь 3 онооны бонус асуулт, эцсийн оноо']],
+   ['Өөрийгөө шалгах (жишээ асуулт)',['HTTP 404 ба 500 кодын ялгаа юу вэ?','TCP, UDP хоёрын аль нь холболт тогтоодог вэ?','DNS-ийн A бичлэг юуг юутай холбодог вэ?','Статик сайтыг хамгийн хурдан хаана байршуулж болох вэ?']]],
+  links:[['PPTX татах',F+'727/mod_resource/content/2/Introduction%20to%20Web%20design%20QUIZ.pptx']]},
+ {id:'330',type:'vid',title:'Видео 1 · Танилцуулга',meta:'YouTube',notes:[['Юуны тухай',['Курсийн танилцуулга: юу сурах, ямар дарааллаар явах']]],links:[['YouTube-д үзэх',YT('2On9vtl6EMs')]]},
+ {id:'331',type:'vid',title:'Видео 2 · Хөгжүүлэлтийн орчин',meta:'YouTube',notes:[['Юуны тухай',['Код бичих орчноо бэлдэх: VS Code, хөтөч, өргөтгөлүүд']]],links:[['YouTube-д үзэх',YT('UnLwm6RFhVk')]]}
+]},
+{id:'s2',title:'HTML 1: Веб ба HTML-ийн үндэс',sub:'Хичээл 1 · 1-р долоо хоног · лекц + лаборатори',items:[
+ {id:'402',type:'lec',title:'HTML Lecture 1: Веб ба HTML-ийн үндэс',meta:'PDF · 29 слайд',
+  notes:[['Лекц',['Хичээлийн дүрэм, хэрэгсэл: VS Code, Emmet (! + Tab), файл/хавтас нэрлэх дүрэм (жишээ нь ovog-ner-html/01-tanilts/)','Интернет ба Веб ижил зүйл биш; URL бичсэнээс хуудас дэлгэцэнд гарах хүртэлх алхам','Вебийн 3 багана: HTML (бүтэц), CSS (харагдах байдал), JS (үйлдэл)','HTML гэж юу вэ: тэг, элемент, атрибут; элементийн бүтэц <p class="intro">…</p>','Хоосон (void) элемент, HTML баримтын үндсэн бүтэц (<!DOCTYPE html>, head, body)','Гарчиг ба догол мөр (h1–h6, p), текстийг утгатай тэмдэглэх (strong, em)','Жагсаалт ul / ol / li, холбоос <a>, файлын зам: relative ба absolute']],
+   ['Лаборатори (20 оноо)',['Лаб 1: Өөрийн profile хуудас HTML-ээр','Лаб 2: Дуртай хоолны жор: дугаартай ба дугааргүй жагсаалт','Гэрийн даалгавар: Лаб 1–2-оо дуусгах']]],
+  links:[['PDF нээх',F+'742/mod_resource/content/1/HTML-lecture-1.pdf']]},
+ {id:'399',type:'code',title:'HTML Lecture 1 examples',meta:'ZIP · лабын бэлэн шийдэл',
+  files:['piaweb/index.html','piaweb/profile.html','jor/menu.html'],
+  notes:[['Доторх зүйл',['Profile хуудас ба хоолны жорын (цэс) жишээ HTML файлууд','Git repo хэлбэртэй (.git хавтас дагалдана), шууд хөтөч дээр нээгээд үзэж болно']]],
+  links:[['ZIP татах',F+'739/mod_resource/content/2/HTML%20lecture-1%20examples%20.zip']]},
+ {id:'332',type:'vid',title:'Видео 3 · HTML парт 1',meta:'YouTube',notes:[['Юуны тухай',['HTML-ийн анхны тэгүүд, хуудасны бүтэц']]],links:[['YouTube-д үзэх',YT('MJsnxpJ9U5U')]]},
+ {id:'334',type:'vid',title:'Видео 4 · Harvard CS50 Web Design',meta:'YouTube · англи хэл',notes:[['Юуны тухай',['Harvard CS50-ийн HTML/CSS лекц: нэмэлтээр үзэх англи материал']]],links:[['YouTube-д үзэх',YT('1ALXvIilH_o')]]}
+]},
+{id:'s3',title:'HTML 2: Холбоос, зураг, хүснэгт, маягт, семантик',sub:'Хичээл 2 · 1-р долоо хоног',items:[
+ {id:'403',type:'lec',title:'HTML Lecture 2',meta:'PDF · 28 слайд',
+  notes:[['Лекц',['Өмнөх хичээлийн давтлага асуулт','Холбоос <a>, файлын зам, зураг <img> (src, alt)','Хүснэгт: table, tr, th, td','Маягт (form): input-ийн төрлүүд, label, select, textarea, button','Block ба inline элемент, <div> ба <span>','Семантик HTML: header, nav, main, section, article, footer, яагаад хэрэгтэй вэ','id ба class-ын ялгаа, тусгай тэмдэгт (entity) ба comment','HTML-ийн түгээмэл алдаа (тэг хаагаагүй гэх мэт)']],
+   ['Лаборатори (34 оноо)',['Лаб 3: Хичээлийн хуваарь: хүснэгтээр','Лаб 4: Санал асуулгын маягт','Лаб 5: Мэдээний сайтын нүүр хуудас: семантик тэгээр','Гэрийн даалгавар: лабуудаа дуусгах; дараагийнх нь HTML бие даалт']]],
+  links:[['PDF нээх',F+'743/mod_resource/content/1/HTML%20Lecture%202.pdf']]},
+ {id:'401',type:'code',title:'HTML Lecture 2 examples',meta:'ZIP · Лаб 3–5 шийдэл',
+  files:['lecture2-hicheel-huvaari/index.html','lceture2-sanal-asuulga/index.html','lecture2-medee/index.html','images/logo.svg','images/campus.svg'],
+  notes:[['Доторх зүйл',['Хичээлийн хуваарь (хүснэгт), санал асуулга (маягт), мэдээний сайт (семантик) гэсэн 3 жишээ']]],
+  links:[['ZIP татах',F+'741/mod_resource/content/1/HTML%20Lecture%202%20examples.zip']]},
+ {id:'335',type:'vid',title:'Видео 5 · HTML парт 2',meta:'YouTube',notes:[['Юуны тухай',['HTML-ийн үргэлжлэл: холбоос, зураг, жагсаалт']]],links:[['YouTube-д үзэх',YT('o7c-VXeMmGY')]]},
+ {id:'337',type:'vid',title:'Видео 6 · HTML парт 3',meta:'YouTube',notes:[['Юуны тухай',['HTML-ийн үргэлжлэл: хүснэгт, маягт, бүтэц']]],links:[['YouTube-д үзэх',YT('tquQYzrE2QQ')]]}
+]},
+{id:'s4',title:'CSS 1: CSS үндэс ба Box model',sub:'Хичээл 4 · 2-р долоо хоног',items:[
+ {id:'404',type:'lec',title:'CSS Lecture 1: CSS үндэс ба Box model',meta:'PDF · 29 слайд',
+  notes:[['Лекц',['CSS гэж юу вэ (Cascading Style Sheets), дүрмийн бүтэц: selector { property: value; }','CSS-ийг HTML-д холбох 3 арга: inline, <style>, гадаад .css файл','Үндсэн сонгогч (tag, .class, #id), нийлмэл сонгогч (combinator)','Pseudo-class (:hover) ба pseudo-element (::before)','Cascade, specificity (ID 1-0-0, class 0-1-0, tag 0-0-1), удамшил','Өнгө (нэр, hex, rgb, hsl), хэмжих нэгж (px, %, em, rem, vw)','Текст, фонт, background','Box model: content → padding → border → margin; box-sizing: border-box','margin/padding товчилсон бичлэг, display (block, inline, inline-block, none), position']],
+   ['Лаборатори',['Лаб 1: Нэрийн хуудасны типографи','Лаб 2: Клубийн хуудас: сонгогчийн төрлүүдийг ашиглах','Лаб 3: Box model: үнийн карт']]],
+  links:[['PDF нээх',F+'744/mod_resource/content/1/CSS%20Lecture%201.pdf']]},
+ {id:'405',type:'code',title:'CSS Lecture 1 examples',meta:'ZIP · Лаб 1–3 шийдэл',
+  files:['01-neriin-huudas/','02-klub/','03-uniin-kart/'],
+  notes:[['Доторх зүйл',['Хавтас бүрт index.html + style.css: нэрийн хуудас, клубийн хуудас, үнийн карт']]],
+  links:[['ZIP татах',F+'745/mod_resource/content/1/CSS-1.zip']]},
+ {id:'167',type:'lec',title:'Лекц - CSS (хуучин хувилбар)',meta:'PDF · 35 слайд',
+  notes:[['Агуулга',['CSS кодын бүтэц, HTML-д CSS холбох аргууд','CSS сонгогч тодорхойлох олон арга ба тэдгээрийн хэлбэржүүлэлт','Хэмжих нэгж: үнэмлэхүй ба харьцангуй','Фонтын бүл, Google Fonts холбох, фонтын өндөр/жин, зэрэгцүүлэлт','Текстийн өнгө, CSS өнгөний загвар']],['Зөвлөмж',['CSS Lecture 1-тэй давхцана: нэмэлт жишээ хэрэгтэй үед уншаарай']]],
+  links:[['PDF нээх',F+'232/mod_resource/content/1/css.pdf']]},
+ {id:'342',type:'vid',title:'Видео 7 · CSS',meta:'YouTube',notes:[['Юуны тухай',['CSS-ийн үндэс видеогоор']]],links:[['YouTube-д үзэх',YT('0BBSv6hk8uE')]]}
+]},
+{id:'s5',title:'CSS 2: Flexbox, Grid, Responsive',sub:'Хичээл 5 · 2-р долоо хоног',items:[
+ {id:'406',type:'lec',title:'CSS Lecture 2: Flexbox, Grid, Responsive',meta:'PDF · 28 слайд',
+  notes:[['Лекц',['Хичээл 4-ийн давтлага','Flexbox (нэг чиглэл): flex container, justify-content, align-items, flex items, төвд байрлуулах','CSS Grid (хоёр чиглэл): grid-template-columns, grid-template-areas','Flexbox уу, Grid үү: хэзээ алийг нь сонгох','Responsive дизайн: утас (<768px), таблет, компьютер; media query','Responsive зөвлөмж: уян зураг, mobile-first','DevTools (F12) ашиглах, сайн код бичих дадал','Тоглоомоор дадлага: Flexbox Froggy, Grid Garden','Цаашдын суралцах зам: HTML/CSS → Git → JavaScript → …']],
+   ['Лаборатори ба гэрийн даалгавар',['Лаб 4: Flexbox: аялалын нүүр хуудас','Лаб 5: CSS Grid: зургийн цомог','Гэрийн даалгавар: YouTube нүүр хуудсыг хуулбарлан хийх']]],
+  links:[['PDF нээх',F+'746/mod_resource/content/1/CSS%20Lecture%202.pdf']]},
+ {id:'408',type:'code',title:'CSS Lecture 2 examples',meta:'ZIP · Flex, Grid, Responsive жишээ',
+  files:['CSS-2/CSS-Flex-jishee.html','CSS-2/CSS-Grid-jishee.html','CSS-2/CSS-Responsive-jishee.html','04-ayalal/ (index, gobi, hovsgol)','05-tsomog/','images/*.svg'],
+  notes:[['Доторх зүйл',['Flex, Grid, Responsive тус бүрийн жишээ файл','Аялалын сайт (Говь, Хөвсгөл хуудастай) ба зургийн цомгийн лабын шийдэл']]],
+  links:[['ZIP татах',F+'748/mod_resource/content/1/CSS%20Lecture%202%20examples.zip']]}
+]},
+{id:'s6',title:'CSS Framework ба AI хэрэгсэл',sub:'Bootstrap, TailwindCSS, v0.app',items:[
+ {id:'345',type:'vid',title:'Видео 8 · Bootstrap CSS Framework',meta:'YouTube',notes:[['Юуны тухай',['Бэлэн класс, grid системтэй Bootstrap-ээр хурдан загвар хийх']]],links:[['YouTube-д үзэх',YT('JT4euSSS6_k')]]},
+ {id:'348',type:'vid',title:'Видео 9 · v0.app AI-р вэб загвар бүтээе',meta:'YouTube',notes:[['Юуны тухай',['v0.app ашиглан AI-аар вэб загвар үүсгэх']]],links:[['YouTube-д үзэх',YT('BCk1s-4KNEU')]]},
+ {id:'351',type:'vid',title:'Видео 10 · Танилцуулга вэб сайтыг 0–3$ зарцуулан 10 минутад [v0]',meta:'YouTube',notes:[['Юуны тухай',['v0-оор танилцуулга сайт хийж, хямд байршуулах']]],links:[['YouTube-д үзэх',YT('xLUOHYE3Egk')]]},
+ {id:'353',type:'vid',title:'Видео 11 · TailwindCSS',meta:'YouTube',notes:[['Юуны тухай',['Utility-first CSS: Tailwind-ийн класс системийн үндэс']]],links:[['YouTube-д үзэх',YT('zDbel1M88pY')]]}
+]},
+{id:'s7',title:'JavaScript эхлэл',sub:'Хувьсагч, event, өгөгдлийн төрөл, функц',items:[
+ {id:'357',type:'vid',title:'Видео 12 · JavaScript: хувьсагч зарлах, Event барих + Tailwind, Icon жишээ',meta:'YouTube',notes:[['Юуны тухай',['let / const, DOM элемент сонгох, click event барих','Tailwind ба icon ашигласан жишээ хуудас']]],links:[['YouTube-д үзэх',YT('pfKJKd6z1KU')]]},
+ {id:'362',type:'vid',title:'Видео 13 · JavaScript: datatype, if, array, object, function, arrow function',meta:'YouTube',notes:[['Юуны тухай',['Өгөгдлийн төрөл, нөхцөл (if), массив, объект','Энгийн функц ба arrow function']]],links:[['YouTube-д үзэх',YT('H3qVEQhnoRs')]]},
+ {id:'248',type:'ref',title:'JavaScript ном',meta:'ZIP · 3 боть, PDF + EPUB',
+  files:['js.pdf','ui.pdf','more.pdf','*.epub'],
+  notes:[['Доторх зүйл',['3 боть: JavaScript хэл (js), хөтөч ба UI (ui), нэмэлт сэдэв (more)','PDF ба EPUB хоёр форматаар; утсан дээр EPUB уншихад тохиромжтой']]],
+  links:[['ZIP татах',F+'318/mod_resource/content/1/javascript_ebook.zip']]}
+]},
+{id:'s8',title:'Дасгал ажил ба лавлах',sub:'Код дагаж бичих, загвар хуулбарлах',items:[
+ {id:'221',type:'task',title:'Дасгал 1 · Instagram (код дагаж бичих видео)',meta:'YouTube',notes:[['Даалгавар',['Видеог дагаж Instagram-ын profile хуудсыг HTML/CSS-ээр бичих']]],links:[['YouTube-д үзэх',YT('4CgeSqvdW2s')]]},
+ {id:'222',type:'code',title:'Дасгал 1 · Жишээ (Instagram шийдэл)',meta:'ZIP',files:['instagram/index.html','instagram/style.css','img/logo.png','img/verify.png'],
+  notes:[['Доторх зүйл',['Instagram дасгалын бэлэн HTML + CSS; өөрийнхөө кодтой харьцуулаарай']]],
+  links:[['ZIP татах',F+'291/mod_resource/content/1/instagram.zip']]},
+ {id:'223',type:'task',title:'Дасгал 2 · Spotify',meta:'PNG загвар',notes:[['Даалгавар',['Spotify-ийн дэлгэцийн зургийг харж, ижил загварыг HTML/CSS-ээр өөрөө бүтээх','Flexbox / Grid-ээ ашиглах сайн дасгал']]],
+  links:[['Загвар зургийг нээх',F+'292/mod_resource/content/3/Screenshot%202025-01-28%20at%2016.23.54.png']]},
+ {id:'325',type:'ref',title:'W3Schools HTML',meta:'Гадаад лавлах сайт',notes:[['Хэзээ ашиглах',['Тэг, атрибутын утгыг хурдан шалгах, "Try it" редактор дээр туршиж үзэх']]],links:[['W3Schools нээх','https://www.w3schools.com/html/']]},
+ {id:'2',type:'ref',title:'Announcements Forum',meta:'Курсийн мэдээлэл',notes:[['Юу байдаг',['Багшийн зарлал, шинэ материалын мэдээ']]],links:[['Форум нээх',M('forum','2')]]}
+]}
+];
+
+
+const LESSONS=[
+  {id:'web',n:'0',t:'Вэб хөгжүүлэлтийн суурь',s:'Онол · протокол, DNS, хостинг'},
+  {id:'html1',n:'1',t:'HTML 1: үндэс',s:'Бүтэц, текст, жагсаалт, холбоос'},
+  {id:'html2',n:'2',t:'HTML 2: зураг, хүснэгт, маягт',s:'Семантик, id/class'},
+  {id:'css1',n:'3',t:'CSS 1: үндэс ба Box model',s:'Сонгогч, specificity'},
+  {id:'css2',n:'4',t:'CSS 2: Flex, Grid, Responsive',s:'Layout, media query'},
+  {id:'js',n:'5',t:'Framework ба JavaScript',s:'Bootstrap, Tailwind, JS'},
+  {id:'practice',n:'6',t:'Дасгал: Instagram, Spotify',s:'Загвар хуулбарлах'},
+  {id:'quiz',n:'★',t:'Их давтлага',s:'6 раунд асуулт'}
+];
+
+const QUIZ={
+web:[
+ ['Хэрэглэгчийн хөтөч дээр ажиллаж, цэс, товч харуулдаг хэсгийг юу гэдэг вэ?',['Backend','Frontend','Өгөгдлийн сан','DNS'],1,'Frontend = клиент тал.'],
+ ['HTTPS-ийн анхдагч порт аль нь вэ?',['80','22','443','8080'],2,'HTTP 80, HTTPS 443, SSH 22.'],
+ ['Домэйн нэрийг IP хаяг руу хөрвүүлдэг систем?',['HTTP','DNS','TCP','FTP'],1,'DNS = интернэтийн утасны лавлах.'],
+ ['404 код юуг илэрхийлэх вэ?',['Серверийн алдаа','Амжилттай','Хуудас олдсонгүй','Шилжүүлсэн'],2,'4xx бол клиентийн алдаа; 404 Not Found.']
+],
+html1:[
+ ['Хуудсанд h1 хэдэн удаа байх нь зөв бэ?',['Хэдэн ч болно','Нэг','Хоёр','Огт хэрэггүй'],1,'Нэг гол гарчиг; дараа нь h2, h3.'],
+ ['Аль нь хоосон (void) элемент вэ?',['<p>','<li>','<br>','<a>'],2,'br, hr, img, input, meta хаах тэггүй.'],
+ ['Кирилл үсгийг зөв харуулахад head-д юу хэрэгтэй вэ?',['<meta charset="UTF-8">','<title>','<link>','lang="en"'],0,'UTF-8 кодчилол.'],
+ ['pages/contact.html-ээс index.html руу (нэг дээш) ямар зам?',['index.html','/pages/index.html','../index.html','./pages/index.html'],2,'../ = нэг хавтас дээш.'],
+ ['Дараалал чухал алхмуудад аль жагсаалт?',['<ul>','<ol>','<dl>','<menu>'],1,'ol = ordered, дугаартай.']
+],
+html2:[
+ ['img-ийн alt атрибут юунд хэрэгтэй вэ?',['Зургийг томруулах','Зураг ачаалагдахгүй үед ба дэлгэц уншигчид тайлбар','Хүрээ нэмэх','Холбоос болгох'],1,'Хүртээмж ба SEO.'],
+ ['Олон сонголтоос зөвхөн НЭГИЙГ сонгох input?',['checkbox','radio','select multiple','range'],1,'Ижил name-тэй radio-оос нэг л сонгогдоно.'],
+ ['Хүснэгтийн нүдийг хэвтээ чиглэлд нэгтгэх атрибут?',['rowspan','colspan','merge','span'],1,'colspan = багана нэгтгэнэ.'],
+ ['Бие даасан мэдээ, блог пост аль тэгт тохирох вэ?',['<div>','<aside>','<article>','<span>'],2,'article = бие даан утгатай агуулга.'],
+ ['id ба class-ын зөв ялгаа?',['id олон удаа, class нэг удаа','id нэг удаа, class олон удаа','Ялгаагүй','class зөвхөн JS-д'],1,'id хуудсанд давтагдахгүй.']
+],
+css1:[
+ ['Хамгийн зөв CSS холбох арга?',['Inline style','<style> тэг','Гадаад .css файл <link>-ээр','JS-ээр'],2,'Дахин ашиглана, cache хийгдэнэ.'],
+ ['Аль сонгогч хамгийн өндөр specificity-тэй вэ?',['.nav a','#menu','div p span','.a.b.c'],1,'Нэг id (1-0-0) хэдэн ч class-аас хүчтэй.'],
+ ['width:200px; padding:10px; border:2px; content-box үед бодит өргөн?',['200px','212px','220px','224px'],3,'200 + 10×2 + 2×2 = 224.'],
+ ['margin: 10px 20px гэдэг нь?',['Бүгд 10','Дээд/доод 10, зүүн/баруун 20','Дээд 10, доод 20','Зүүн 10, баруун 20'],1,'2 утга: босоо, хэвтээ.'],
+ ['Root фонтоос хамаардаг нэгж?',['em','rem','%','px'],1,'rem = root em.']
+],
+css2:[
+ ['Flex container-ийн үндсэн тэнхлэгийн дагуу зэрэгцүүлэх шинж?',['align-items','justify-content','flex-wrap','place-self'],1,'Хөндлөн тэнхлэг нь align-items.'],
+ ['Элементийг яг төвд байрлуулах flex хослол?',['justify-content:center; align-items:center','text-align:center','margin:auto 0','float:center'],0,'Эцэгт display:flex + энэ хоёр.'],
+ ['Мөр БА баганыг зэрэг удирдах layout?',['Flexbox','Grid','Float','Inline-block'],1,'Grid 2 хэмжээст.'],
+ ['Media query-гүйгээр баганын тоог автоматаар өөрчлөх?',['repeat(4,1fr)','repeat(auto-fit, minmax(200px,1fr))','flex:1','width:25%'],1,'auto-fit + minmax.'],
+ ['Mobile-first media query ямар нөхцөлтэй вэ?',['max-width','min-width','orientation','print'],1,'Жижгээс эхэлж min-width-ээр томруулна.']
+],
+big:[
+ ['Р1 · Full-stack хөгжүүлэгч гэж хэн бэ?',['Зөвхөн дизайн хийдэг','Frontend ба backend хоёуланг хийдэг','Зөвхөн сервер хариуцдаг','Зөвхөн тест хийдэг'],1,''],
+ ['Р1 · Статик сайтын давуу тал?',['Хэрэглэгч бүрт өөр','Хурдан, хямд','Өгөгдлийн сан заавал','Нэвтрэлттэй'],1,''],
+ ['Р2 · Богино давталтаар (sprint) ажиллах аргачлал?',['Waterfall','Agile','Spiral','V-model'],1,''],
+ ['Р2 · Wireframe ямар шатны гаралт вэ?',['Шаардлага','Дизайн','Тест','Арчилгаа'],1,''],
+ ['Р3 · World Wide Web-ийг хэн зохион бүтээсэн бэ?',['Билл Гейтс','Тим Бернерс-Ли','Стив Жобс','Линус Торвальдс'],1,''],
+ ['Р3 · Хэрэглэгч өөрөө контент үүсгэдэг сошиал вэбийн үе?',['Web 1.0','Web 2.0','Web 3.0','ARPANET'],1,''],
+ ['Р4 · Холболт тогтоож, алга болсон пакетийг дахин илгээдэг протокол?',['UDP','TCP','IP','DNS'],1,''],
+ ['Р4 · Шинэ өгөгдөл (бүртгэл) илгээх HTTP method?',['GET','POST','DELETE','HEAD'],1,''],
+ ['Р4 · 5xx код юуг илэрхийлэх вэ?',['Амжилт','Шилжүүлэлт','Клиентийн алдаа','Серверийн алдаа'],3,''],
+ ['Р5 · Домэйныг IPv4 хаяг руу заадаг DNS бичлэг?',['MX','CNAME','A','TXT'],2,''],
+ ['Р5 · Имэйл хүлээн авах серверийг заадаг бичлэг?',['MX','A','NS','AAAA'],0,''],
+ ['Р6 · Физик серверийг виртуалаар хувааж, root эрхтэй өгдөг хостинг?',['Shared','VPS','Static','Email hosting'],1,''],
+ ['Р6 · git push хийхэд автоматаар байршуулдаг үйлчилгээ?',['FTP','Vercel / Netlify','Shared cPanel','USB'],1,''],
+ ['Бонус · Хаяг бичихэд аль нь ХАМГИЙН ЭХЭНД болдог вэ?',['HTML render','TCP холболт','DNS-ээс IP асуух','GET хүсэлт'],2,'DNS → TCP → TLS → GET → render.']
+]};
+
+let done={}; try{done=JSON.parse(localStorage.getItem('ll-done')||'{}')}catch(e){}
+let ldone={}; try{ldone=JSON.parse(localStorage.getItem('ll-lessons')||'{}')}catch(e){}
+const save=()=>{try{localStorage.setItem('ll-done',JSON.stringify(done));localStorage.setItem('ll-lessons',JSON.stringify(ldone))}catch(e){}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- code highlighting + live demos ---------- */
+function dedent(s){s=s.replace(/^\n+|\s+$/g,'');const m=s.split('\n').filter(l=>l.trim()).map(l=>l.match(/^ */)[0].length);const k=Math.min(...m);return s.split('\n').map(l=>l.slice(k)).join('\n')}
+function hl(src){
+  let h=esc(src);
+  h=h.replace(/(&lt;!--[\s\S]*?--&gt;)/g,'<span class="tok-com">$1</span>');
+  h=h.replace(/(\/\*[\s\S]*?\*\/)/g,'<span class="tok-com">$1</span>');
+  h=h.replace(/(&lt;\/?)([a-z][a-z0-9]*)/g,'$1<span class="tok-tag">$2</span>');
+  h=h.replace(/ ([a-z-]+)=(&quot;[^&]*?&quot;)/g,' <span class="tok-attr">$1</span>=<span class="tok-str">$2</span>');
+  return h;
+}
+function initDemos(scope){
+  scope.querySelectorAll('.ex[data-live]:not([data-ready])').forEach(ex=>{
+    ex.dataset.ready='1';
+    const tpl=ex.querySelector('template'); const raw=dedent(tpl.innerHTML);
+    const isJS=ex.hasAttribute('data-js');
+    const ctl=ex.dataset.controls==='justify';
+    ex.innerHTML=`<div class="ex-bar">${isJS?'html + js':'html + css'}<span class="sp"></span><button type="button" data-copy>Хуулах</button></div><pre>${hl(raw)}</pre><div class="out"><div class="out-label">Үр дүн</div>${ctl?'<div class="stage" style="padding-bottom:0;display:flex;flex-wrap:wrap;gap:6px" data-ctl></div>':''}<div class="stage"><div class="host"></div></div></div>`;
+    const host=ex.querySelector('.host'); const root=host.attachShadow({mode:'open'});
+    const wrap=document.createElement('div'); wrap.style.cssText='color:#15211d;background:#fff;padding:12px;border-radius:8px;font-family:system-ui,sans-serif';
+    let scripts=[];
+    wrap.innerHTML=raw.replace(/<script>([\s\S]*?)<\/script>/g,(m,c)=>{scripts.push(c);return ''});
+    root.appendChild(wrap);
+    scripts.forEach(c=>{try{new Function('root',c)(root)}catch(e){wrap.insertAdjacentHTML('beforeend','<p style="color:red">'+esc(e.message)+'</p>')}});
+    ex.querySelector('[data-copy]').addEventListener('click',e=>{
+      const b=e.currentTarget;
+      navigator.clipboard?.writeText(raw).then(()=>{b.textContent='Хуулсан ✓';setTimeout(()=>b.textContent='Хуулах',1500)}).catch(()=>{const r=document.createRange();r.selectNodeContents(ex.querySelector('pre'));const s=getSelection();s.removeAllRanges();s.addRange(r)});
+    });
+    if(ctl){
+      const bar=ex.querySelector('[data-ctl]');
+      ['flex-start','center','space-between','space-around','space-evenly'].forEach(v=>{
+        const b=document.createElement('button');b.type='button';b.className='chip';b.textContent='justify-content: '+v;b.setAttribute('aria-pressed',v==='space-between');
+        b.onclick=()=>{root.querySelector('.row').style.justifyContent=v;bar.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b))};
+        bar.appendChild(b);
+      });
+    }
+  });
+}
+
+/* ---------- quizzes ---------- */
+function initQuiz(scope){
+  scope.querySelectorAll('.quiz:not([data-ready])').forEach(z=>{
+    z.dataset.ready='1'; const qs=QUIZ[z.dataset.quiz]||[]; let right=0, answered=0;
+    z.innerHTML=qs.map((q,i)=>`<div class="q" data-i="${i}"><p>${i+1}. ${esc(q[0])}</p><div class="opts">${q[1].map((o,j)=>`<button type="button" class="opt" data-j="${j}">${esc(o)}</button>`).join('')}</div><div class="why" hidden></div></div>`).join('')+`<div class="score" hidden></div>`;
+    z.addEventListener('click',e=>{
+      const b=e.target.closest('.opt'); if(!b) return; const box=b.closest('.q'); if(box.dataset.done) return;
+      box.dataset.done=1; const q=qs[box.dataset.i]; const j=+b.dataset.j; answered++;
+      box.querySelectorAll('.opt')[q[2]].classList.add('right');
+      if(j===q[2]) right++; else b.classList.add('wrong');
+      const why=box.querySelector('.why'); why.hidden=false; why.textContent=(j===q[2]?'Зөв! ':'Буруу. Зөв хариулт: '+q[1][q[2]]+'. ')+(q[3]||'');
+      if(answered===qs.length){const s=z.querySelector('.score');s.hidden=false;s.textContent=`Оноо: ${right} / ${qs.length}`+(right===qs.length?' · Төгс!':right>=qs.length*.7?' · Сайн байна!':' · Хичээлээ дахин нэг уншаад үзээрэй.')}
+    });
+  });
+}
+
+/* ---------- lesson router ---------- */
+function renderRail(cur){
+  document.getElementById('lrail').innerHTML=LESSONS.map(l=>`<li class="${ldone[l.id]?'done':''}"><a href="#${l.id}" aria-current="${l.id===cur}"><span class="n">${l.n}</span><span>${esc(l.t)}<small>${esc(l.s)}</small></span></a></li>`).join('');
+  const c=LESSONS.filter(l=>ldone[l.id]).length;
+  document.getElementById('progtxt').textContent=`${c} / ${LESSONS.length} хичээл`;
+  document.getElementById('progbar').style.width=(c/LESSONS.length*100)+'%';
+}
+function showLesson(id){
+  const art=document.querySelector(`article[data-lesson="${id}"]`);
+  document.querySelectorAll('article.lesson').forEach(a=>a.hidden=a!==art);
+  initDemos(art); initQuiz(art);
+  if(!art.querySelector('.lesson-foot')){
+    const i=LESSONS.findIndex(l=>l.id===id), prev=LESSONS[i-1], next=LESSONS[i+1];
+    const f=document.createElement('div'); f.className='lesson-foot';
+    f.innerHTML=`${prev?`<a class="btn ghost" href="#${prev.id}">← ${esc(prev.t)}</a>`:'<span></span>'}<button type="button" class="btn" data-mark></button>${next?`<a class="btn ghost" href="#${next.id}">${esc(next.t)} →</a>`:''}`;
+    art.appendChild(f);
+    f.querySelector('[data-mark]').addEventListener('click',()=>{ldone[id]=!ldone[id];if(!ldone[id])delete ldone[id];save();updMark(art,id);renderRail(id)});
+  }
+  updMark(art,id);
+  document.getElementById('toc').innerHTML='<h2>Энэ хичээлд</h2>'+[...art.querySelectorAll('h2[id]')].map(h=>`<a href="javascript:void 0" data-to="${h.id}">${esc([...h.childNodes].filter(n=>!(n.classList&&n.classList.contains('num'))).map(n=>n.textContent).join('').trim())}</a>`).join('');
+  renderRail(id);
+}
+function updMark(art,id){const b=art.querySelector('[data-mark]');b.textContent=ldone[id]?'✓ Дууссан':'Дууссан гэж тэмдэглэх';b.classList.toggle('done',!!ldone[id])}
+document.getElementById('toc').addEventListener('click',e=>{const a=e.target.closest('[data-to]');if(!a)return;e.preventDefault();document.getElementById(a.dataset.to).scrollIntoView({behavior:'smooth'})});
+
+function route(){
+  const h=location.hash.slice(1); const isMap=h==='map';
+  document.getElementById('view-learn').hidden=isMap; document.getElementById('view-map').hidden=!isMap;
+  document.getElementById('tab-learn').setAttribute('aria-current',!isMap); document.getElementById('tab-map').setAttribute('aria-current',isMap);
+  if(isMap){renderFilters();render();}
+  else showLesson(LESSONS.some(l=>l.id===h)?h:'web');
+  window.scrollTo(0,0);
+}
+window.addEventListener('hashchange',route);
+
+/* ---------- map view (all course files) ---------- */
+const LESSON_OF={'329':'web','389':'web','390':'quiz','330':'web','331':'web','402':'html1','399':'html1','332':'html1','334':'html1','403':'html2','401':'html2','335':'html2','337':'html2','404':'css1','405':'css1','167':'css1','342':'css1','406':'css2','408':'css2','345':'js','348':'js','351':'js','353':'js','357':'js','362':'js','248':'js','221':'practice','222':'practice','223':'practice'};
+let filter='all', query='';
+const all=STOPS.flatMap(s=>s.items);
+function renderFilters(){
+  const counts={}; all.forEach(i=>counts[i.type]=(counts[i.type]||0)+1);
+  document.getElementById('filters').innerHTML=`<button class="chip" data-f="all" aria-pressed="${filter==='all'}">Бүгд ${all.length}</button>`+
+   Object.entries(TYPES).map(([k,t])=>`<button class="chip" data-f="${k}" aria-pressed="${filter===k}"><span class="dot" style="background:var(${t.c})"></span>${t.label} ${counts[k]||0}</button>`).join('');
+}
+function itemHTML(i){
+  const t=TYPES[i.type];
+  const notes=(i.notes||[]).map(([h,arr])=>`<h4>${esc(h)}</h4><ul>${arr.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`).join('');
+  const files=i.files?`<h4>Файлууд</h4><div class="files">${i.files.map(f=>`<code>${esc(f)}</code>`).join('')}</div>`:'';
+  const les=LESSON_OF[i.id]?`<a class="btn" href="#${LESSON_OF[i.id]}">Хичээлээр унших</a>`:'';
+  const links=`<div class="actions">${les}${i.links.map(([l,u])=>`<a class="btn ghost" href="${u}" target="_blank" rel="noopener">${esc(l)} ↗</a>`).join('')}</div>`;
+  return `<details class="item"><summary>
+    <button class="tick" type="button" aria-label="Дууссан гэж тэмдэглэх" aria-pressed="${!!done[i.id]}" data-tick="${i.id}"></button>
+    <span class="badge ${t.cls}">${t.label}</span>
+    <span class="ttl"><b>${esc(i.title)}</b><small>${esc(i.meta||'')}</small></span>
+    <span class="chev" aria-hidden="true"></span></summary>
+    <div class="ibody">${notes}${files}${links}</div></details>`;
+}
+function match(i){
+  if(filter!=='all'&&i.type!==filter) return false;
+  if(!query) return true;
+  const hay=(i.title+' '+(i.meta||'')+' '+JSON.stringify(i.notes||[])+' '+(i.files||[]).join(' ')).toLowerCase();
+  return query.split(/\s+/).every(w=>hay.includes(w));
+}
+function render(){
+  let html='';
+  STOPS.forEach((s,n)=>{const its=s.items.filter(match); if(!its.length) return;
+    html+=`<section class="stop"><div class="stop-head"><span class="stop-num">${String(n+1).padStart(2,'0')}</span><div><h2>${esc(s.title)}</h2><p>${esc(s.sub)}</p></div></div><div class="items">${its.map(itemHTML).join('')}</div></section>`;});
+  const main=document.getElementById('main');
+  main.innerHTML=html||`<div class="empty">"${esc(query)}" гэсэн үгээр юу ч олдсонгүй.</div>`;
+  if(query) main.querySelectorAll('details').forEach(d=>d.open=true);
+}
+document.getElementById('filters').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(!b)return;filter=b.dataset.f;renderFilters();render()});
+document.getElementById('q').addEventListener('input',e=>{query=e.target.value.trim().toLowerCase();render()});
+document.getElementById('main').addEventListener('click',e=>{const t=e.target.closest('[data-tick]');if(!t)return;e.preventDefault();e.stopPropagation();const id=t.dataset.tick;done[id]=!done[id];if(!done[id])delete done[id];save();t.setAttribute('aria-pressed',!!done[id])});
+
+route();
+</script>
+
+</body></html>
+apps-fileview.texmex_20261029.00_p2
+
+Вэб хөгжүүлэлт Learn Land (1).html
+Displaying Вэб хөгжүүлэлт Learn Land (1).html.

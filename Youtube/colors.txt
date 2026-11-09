@@ -1,0 +1,29 @@
+//Logo
+Logo Color: #bbf1d3
+
+//Background
+background: #03191a
+sidebar-background: #031c20
+
+//Card
+card: from #052628 to #03191a (top to bottom)
+card-text: #b8ecca
+
+//Video
+length-badge-bg: #011511
+length-badge-text: #1fe8bb
+border-color: #006c6f
+title-text-color: #096a59
+views & time color: #066961
+profile-picture-border-color: #19e0b0
+
+//Navbar Top & Searchbar & Icons Top
+Nav Font Color, Search Font Color, Search Border Color: #188a8b
+
+
+//Sidebar
+Sidebar Font Color: #b7fcd4
+Active Sidebar Icon Color: #2ee182
+Sidebar Btn Color: From #013433 To #005449 To #013433
+Inactive Sidebar Font Color: #149995
+Inactive Sidebar Icon Color: #0ac493
