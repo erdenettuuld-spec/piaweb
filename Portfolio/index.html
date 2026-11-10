@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;600;700&family=Nunito:wght@400;600;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <!-- Навигация цэс -->
+    <nav class="navbar">
+        <div class="logo">Эрдэнэттуул</div>
+        <div class="nav-links">
+            <a href="about">Танилцуулга</a>
+            <a href="journey">Суралцсан замнал</a>
+        </div>
+    </nav>
+
+    <!-- Үндсэн агуулга -->
+    <header class="hero">
+        <div class="hero-content">
+            <span class="greeting-badge">🌸Сайн уу? Намайг Эрдэнэттуул гэдэг</span>
+            <h1>PIA Academy-ийн сурагч</h1>
+            <p>Вэб хөгжүүлэлтийн ертөнцөд хөл тавин, өөрийн суралцах аяллыг эхлүүлээд байна.</p>
+            <a href="about" class="btn">Миний тухай унших✨</a>
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- 1.Танилцуулга хэсэг -->
+        <section id="about" class="card about-card">
+            <div class="card-header">
+                <h2>Миний тухай</h2>
+                <span class="sparkle">✨</span>
+            </div>
+            <div class="about-grid">
+                <div class="avatar-box">
+                    <img src="images/profile.jpg" alt="Эрдэнэттуулын зураг" class="profile-img">
+                   <div class="avatar-circle">
+                        <span class="avatar-cicle">🌸</span>
+                    </div>
+
+                </div>
+                <div class="about-text">
+                    <p class="highligth-text">Сайн уу? Намайг<strong>Эрдэнэттуул</strong>гэдэг.Би 21-настай.</p>
+                    <p>Одоогоор<strong>PIA Academy</strong>-д идэвхтэй суралцаж байгаа бөгөөд сургалтынхаа<strong>2дахь
+                            сар луугаа</strong> амжилттай орж байна.</p>
+                    <div class="info-tags">
+                        <span class="tag">🎂21настай</span>
+                        <span class="tag">🎓PIA Academy</span>
+                        <span class="tag">🚀2дахь сар</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2.Суралцсан замнал хэсэг -->
+        <section id="journey" class="card journey-card">
+            <div class="card-header">
+                <h2>Суралцсан замнал</h2>
+                <span class="sparkle">🌱</span>
+            </div>
+
+            <div class="timeline">
+
+                <!-- 1-р сар -->
+                <div class="timeline-item">
+                    <div class="timeline-icon">1</div>
+                    <div class="timeline-content">
+                        <span class="month-badge">1дэх сар</span>
+                        <h3>Код бичих суурь ба С хэл</h3>
+                        <p>Сургалтынхаа эхний сард алгоритмын сэтгэлгээг хөгжүүлж,<strong>C хэл</strong>болон код бичих
+                            үндсэн ухагдахуунуудыг амжилттай сурч мэдсэн.</p>
+                        <div class="skills-list">
+                            <span class="skill-chip">C Language</span>
+                            <span class="skill-chip">Алгоритм</span>
+                            <span class="skill-chip">Код бичих суурь</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2-р сар -->
+                <div class="timeline-item">
+                    <div class="timeline-icon">2</div>
+                    <div class="timeline-content">
+                        <span class="month-badge active-month">2дахь сар (Одоогийн)</span>
+                        <h3>Вэбийн бүтээц ба Дизайн</h3>
+                        <p>Хоёр дахь сардаа веб хуудасны бүтэц болон загвар дизайныг тодорхойлдог <strong>HTML болон
+                                CSS</strong>хэлүүдийг гүнзгийрүүлэн суралцаж байна.</p>
+                        <div class="skills-list">
+                            <span class="skill-chip active-chip">HTML5</span>
+                            <span class="skill-chip active-chip">CSS3</span>
+                            <span class="skill-chip active-chip">Responsive Design</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <!-- Хөл хэсэг -->
+    <footer>
+        <p>© 2026 Эрдэнэттуул | PIA Academy-ийн сурагч 🌸</p>
+    </footer>
+</body>
+
+</html>
